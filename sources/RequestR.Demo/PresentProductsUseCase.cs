@@ -18,9 +18,9 @@ using System.Collections.Generic;
 
 namespace DustInTheWind.RequestR.Demo
 {
-    internal class PresentProductsRequestHandler : IRequestHandler<PresentProductsRequest, List<Product>>
+    internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, List<Product>>
     {
-        public List<Product> Handle(PresentProductsRequest request)
+        public List<Product> Execute(PresentProductsRequest request)
         {
             return new List<Product>
             {

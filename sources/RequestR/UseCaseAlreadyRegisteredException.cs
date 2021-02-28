@@ -18,11 +18,20 @@ using System;
 
 namespace DustInTheWind.RequestR
 {
-    public class HandlerAlreadyRegisteredException : Exception
+    /// <summary>
+    /// This exception is thrown by the <see cref="RequestBus"/> when a second use case is registered
+    /// for the same type of request.
+    /// </summary>
+    public class UseCaseAlreadyRegisteredException : RequestRException
     {
-        private const string DefaultMessage = "Another handler is already registered for this request. Request type {0}.";
+        private const string DefaultMessage = "Another use case is already registered for this request. Request type {0}.";
 
-        public HandlerAlreadyRegisteredException(Type requestType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UseCaseAlreadyRegisteredException"/> class
+        /// with the request type for which the use case is attempted to be registered.
+        /// </summary>
+        /// <param name="requestType">The type of the request for which the second use case was attempted to be registered.</param>
+        public UseCaseAlreadyRegisteredException(Type requestType)
             : base(string.Format(DefaultMessage, requestType.FullName))
         {
         }

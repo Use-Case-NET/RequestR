@@ -20,9 +20,17 @@ using System.Reflection;
 
 namespace DustInTheWind.RequestR
 {
+    /// <summary>
+    /// Contains extension methods for the <see cref="RequestBus"/> type.
+    /// </summary>
     public static class RequestBusExtensions
     {
-        public static void RegisterAllHandlers(this RequestBus requestBus)
+        /// <summary>
+        /// Searches all the assemblies from the current <see cref="AppDomain"/>
+        /// and registers all the use case and validator classes.
+        /// </summary>
+        /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
+        public static void RegisterAllUseCases(this RequestBus requestBus)
         {
             if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
 
@@ -34,7 +42,12 @@ namespace DustInTheWind.RequestR
                 RegisterAllInternal(requestBus, assembly);
         }
 
-        public static void RegisterAllHandlers(this RequestBus requestBus, Assembly assembly)
+        /// <summary>
+        /// Searches the specified assembly and registers all the use case and validator classes.
+        /// </summary>
+        /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
+        /// <param name="assembly">The assembly to be searched.</param>
+        public static void RegisterAllUseCases(this RequestBus requestBus, Assembly assembly)
         {
             if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
@@ -42,7 +55,12 @@ namespace DustInTheWind.RequestR
             RegisterAllInternal(requestBus, assembly);
         }
 
-        public static void RegisterAllHandlers(this RequestBus requestBus, Type type)
+        /// <summary>
+        /// Searches the assembly containing the specified type and registers all the use case and validator classes.
+        /// </summary>
+        /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
+        /// <param name="type">A <see cref="Type"/> instance contained by the assembly to be searched.</param>
+        public static void RegisterAllUseCases(this RequestBus requestBus, Type type)
         {
             if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -54,10 +72,10 @@ namespace DustInTheWind.RequestR
 
         private static void RegisterAllInternal(RequestBus requestBus, Assembly assembly)
         {
-            IEnumerable<Type> handlerTypes = assembly.GetAllRequestHandlers();
+            IEnumerable<Type> handlerTypes = assembly.GetAllUseCases();
 
             foreach (Type handlerType in handlerTypes)
-                requestBus.RegisterHandler(handlerType);
+                requestBus.RegisterUseCase(handlerType);
 
             IEnumerable<Type> validatorTypes = assembly.GetAllRequestValidators();
 

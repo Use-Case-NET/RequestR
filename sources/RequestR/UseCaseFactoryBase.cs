@@ -18,16 +18,21 @@ using System;
 
 namespace DustInTheWind.RequestR
 {
-    public class DefaultRequestHandlerFactory : IRequestHandlerFactory
+    /// <summary>
+    /// A factory class that creates instances of use cases.
+    /// </summary>
+    public abstract class UseCaseFactoryBase
     {
-        public T Create<T>()
-        {
-            return Activator.CreateInstance<T>();
-        }
-
         public object Create(Type type)
         {
-            return Activator.CreateInstance(type);
+            bool isUseCase = type.IsUseCase();
+
+            if (!isUseCase)
+                throw new RequestRException("The requested type is not a use case.");
+
+            return CreateInternal(type);
         }
+
+        protected abstract object CreateInternal(Type type);
     }
 }

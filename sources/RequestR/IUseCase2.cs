@@ -17,16 +17,18 @@
 namespace DustInTheWind.RequestR
 {
     /// <summary>
-    /// Provides validation for the use case request of type <typeparamref name="TRequest"/>.
+    /// Implements a use case that can handle a <typeparamref name="TRequest"/> object
+    /// and returns a <typeparamref name="TResponse"/> object as response.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request that is validated.</typeparam>
-    public interface IRequestValidator<in TRequest>
+    /// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
+    /// <typeparam name="TResponse">The type of the response that is returned by this use case.</typeparam>
+    public interface IUseCase<in TRequest, out TResponse>
     {
         /// <summary>
-        /// Performs the validation of the use case request.
-        /// If validation fails, an exception is thrown.
+        /// Executes the use case for the specified input data and returns the response.
         /// </summary>
-        /// <param name="request">The request instance that is being validated.</param>
-        void Validate(TRequest request);
+        /// <param name="request">The object containing the input data for the use case.</param>
+        /// <returns>The response to be returned to the caller.</returns>
+        TResponse Execute(TRequest request);
     }
 }

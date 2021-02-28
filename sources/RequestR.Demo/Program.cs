@@ -25,7 +25,7 @@ namespace DustInTheWind.RequestR.Demo
         {
             // Setup request bus
             RequestBus requestBus = new RequestBus();
-            requestBus.RegisterHandler<PresentProductsRequestHandler>();
+            requestBus.RegisterUseCase<PresentProductsUseCase>();
 
             // Send request
             PresentProductsRequest request = new PresentProductsRequest();

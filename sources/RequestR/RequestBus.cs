@@ -23,39 +23,39 @@ namespace DustInTheWind.RequestR
 {
     public class RequestBus
     {
-        private readonly IRequestHandlerFactory requestHandlerFactory;
-        private readonly Dictionary<Type, Type> handlers = new Dictionary<Type, Type>();
+        private readonly UseCaseFactoryBase useCaseFactory;
+        private readonly Dictionary<Type, Type> useCases = new Dictionary<Type, Type>();
         private readonly Dictionary<Type, Type> validators = new Dictionary<Type, Type>();
 
         public RequestBus()
         {
-            requestHandlerFactory = new DefaultRequestHandlerFactory();
+            useCaseFactory = new DefaultUseCaseFactory();
         }
 
-        public RequestBus(IRequestHandlerFactory requestHandlerFactory)
+        public RequestBus(UseCaseFactoryBase useCaseFactory)
         {
-            this.requestHandlerFactory = requestHandlerFactory ?? throw new ArgumentNullException(nameof(requestHandlerFactory));
+            this.useCaseFactory = useCaseFactory ?? throw new ArgumentNullException(nameof(useCaseFactory));
         }
 
-        public void RegisterHandler<THandler>()
+        public void RegisterUseCase<THandler>()
         {
-            RegisterHandler(typeof(THandler));
+            RegisterUseCase(typeof(THandler));
         }
 
-        public void RegisterHandler(Type requestHandlerType)
+        public void RegisterUseCase(Type useCaseType)
         {
-            Type interfaceType = requestHandlerType.GetInterfaces()
-                .FirstOrDefault(x => x.IsGenericType && (x.GetGenericTypeDefinition() == typeof(IRequestHandler<,>) || x.GetGenericTypeDefinition() == typeof(IRequestHandler<>)));
+            Type interfaceType = useCaseType.GetInterfaces()
+                .FirstOrDefault(x => x.IsGenericType && (x.GetGenericTypeDefinition() == typeof(IUseCase<,>) || x.GetGenericTypeDefinition() == typeof(IUseCase<>)));
 
             if (interfaceType == null)
-                throw new ArgumentException("The specified type is not a request handler. It must implement one of the " + typeof(IRequestHandler<,>).FullName + " or " + typeof(IRequestHandler<>).FullName + " interfaces.", nameof(requestHandlerType));
+                throw new ArgumentException("The specified type is not a request handler. It must implement one of the " + typeof(IUseCase<,>).FullName + " or " + typeof(IUseCase<>).FullName + " interfaces.", nameof(useCaseType));
 
             Type requestType = interfaceType.GenericTypeArguments[0];
 
-            if (handlers.ContainsKey(requestType))
-                throw new HandlerAlreadyRegisteredException(requestType);
+            if (useCases.ContainsKey(requestType))
+                throw new UseCaseAlreadyRegisteredException(requestType);
 
-            handlers.Add(requestType, requestHandlerType);
+            useCases.Add(requestType, useCaseType);
         }
 
         public void RegisterValidator<TValidator>()
@@ -85,25 +85,25 @@ namespace DustInTheWind.RequestR
 
             Type requestType = typeof(TRequest);
 
-            if (!handlers.ContainsKey(requestType))
-                throw new HandlerNotFoundException();
+            if (!useCases.ContainsKey(requestType))
+                throw new UseCaseNotFoundException();
 
             ValidateRequest(request);
 
-            Type requestHandlerType = handlers[requestType];
-            object requestHandlerObject = requestHandlerFactory.Create(requestHandlerType);
+            Type useCaseType = useCases[requestType];
+            object useCaseObject = useCaseFactory.Create(useCaseType);
 
-            switch (requestHandlerObject)
+            switch (useCaseObject)
             {
-                case IRequestHandler<TRequest, TResponse> requestHandlerWithResponse:
-                    return requestHandlerWithResponse.Handle(request);
+                case IUseCase<TRequest, TResponse> useCaseWithResponse:
+                    return useCaseWithResponse.Execute(request);
 
-                case IRequestHandler<TRequest> requestHandlerWithoutResponse:
-                    requestHandlerWithoutResponse.Handle(request);
+                case IUseCase<TRequest> useCaseWithoutResponse:
+                    useCaseWithoutResponse.Execute(request);
                     return default;
 
                 default:
-                    throw new UnusableRequestHandlerException(requestType);
+                    throw new UnusableUseCaseException(requestType);
             }
         }
 
@@ -113,26 +113,26 @@ namespace DustInTheWind.RequestR
 
             Type requestType = typeof(TRequest);
 
-            if (!handlers.ContainsKey(requestType))
-                throw new HandlerNotFoundException();
+            if (!useCases.ContainsKey(requestType))
+                throw new UseCaseNotFoundException();
 
             ValidateRequest(request);
 
-            Type requestHandlerType = handlers[requestType];
-            object requestHandlerObject = requestHandlerFactory.Create(requestHandlerType);
+            Type useCaseType = useCases[requestType];
+            object useCaseObject = useCaseFactory.Create(useCaseType);
 
-            switch (requestHandlerObject)
+            switch (useCaseObject)
             {
-                case IRequestHandler<TRequest> requestHandlerWithResponse:
-                    requestHandlerWithResponse.Handle(request);
+                case IUseCase<TRequest> useCaseWithResponse:
+                    useCaseWithResponse.Execute(request);
                     break;
 
-                case IRequestHandler<TRequest, object> requestHandlerWithoutResponse:
-                    requestHandlerWithoutResponse.Handle(request);
+                case IUseCase<TRequest, object> useCaseWithoutResponse:
+                    useCaseWithoutResponse.Execute(request);
                     break;
 
                 default:
-                    throw new UnusableRequestHandlerException(requestType);
+                    throw new UnusableUseCaseException(requestType);
             }
         }
 
@@ -142,25 +142,25 @@ namespace DustInTheWind.RequestR
 
             Type requestType = typeof(TRequest);
 
-            if (!handlers.ContainsKey(requestType))
-                throw new HandlerNotFoundException();
+            if (!useCases.ContainsKey(requestType))
+                throw new UseCaseNotFoundException();
 
             ValidateRequest(request);
 
-            Type requestHandlerType = handlers[requestType];
-            object requestHandler = requestHandlerFactory.Create(requestHandlerType);
+            Type useCaseType = useCases[requestType];
+            object useCaseObject = useCaseFactory.Create(useCaseType);
 
-            switch (requestHandler)
+            switch (useCaseObject)
             {
-                case IRequestHandlerAsync<TRequest, TResponse> requestHandlerWithResponse:
-                    return await requestHandlerWithResponse.Handle(request);
+                case IUseCaseAsync<TRequest, TResponse> useCaseWithResponse:
+                    return await useCaseWithResponse.Execute(request);
 
-                case IRequestHandlerAsync<TRequest> requestHandlerWithoutResponse:
-                    await requestHandlerWithoutResponse.Handle(request);
+                case IUseCaseAsync<TRequest> useCaseWithoutResponse:
+                    await useCaseWithoutResponse.Execute(request);
                     return default;
 
                 default:
-                    throw new UnusableRequestHandlerException(requestType);
+                    throw new UnusableUseCaseException(requestType);
             }
         }
 
@@ -170,26 +170,26 @@ namespace DustInTheWind.RequestR
 
             Type requestType = typeof(TRequest);
 
-            if (!handlers.ContainsKey(requestType))
-                throw new HandlerNotFoundException();
+            if (!useCases.ContainsKey(requestType))
+                throw new UseCaseNotFoundException();
 
             ValidateRequest(request);
 
-            Type requestHandlerType = handlers[requestType];
-            object requestHandler = requestHandlerFactory.Create(requestHandlerType);
+            Type useCaseType = useCases[requestType];
+            object useCaseObject = useCaseFactory.Create(useCaseType);
 
-            switch (requestHandler)
+            switch (useCaseObject)
             {
-                case IRequestHandlerAsync<TRequest> requestHandlerWithoutResponse:
-                    await requestHandlerWithoutResponse.Handle(request);
+                case IUseCaseAsync<TRequest> useCaseWithoutResponse:
+                    await useCaseWithoutResponse.Execute(request);
                     break;
 
-                case IRequestHandlerAsync<TRequest, object> requestHandlerWithResponse:
-                    await requestHandlerWithResponse.Handle(request);
+                case IUseCaseAsync<TRequest, object> useCaseWithResponse:
+                    await useCaseWithResponse.Execute(request);
                     break;
 
                 default:
-                    throw new UnusableRequestHandlerException(requestType);
+                    throw new UnusableUseCaseException(requestType);
             }
         }
 
@@ -203,7 +203,7 @@ namespace DustInTheWind.RequestR
                 return;
 
             Type validatorType = validators[requestType];
-            object validatorObject = requestHandlerFactory.Create(validatorType);
+            object validatorObject = useCaseFactory.Create(validatorType);
 
             if (validatorObject is IRequestValidator<TRequest> validator)
                 validator.Validate(request);

@@ -14,14 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-
 namespace DustInTheWind.RequestR
 {
-    public interface IRequestHandlerFactory
+    /// <summary>
+    /// Implements a use case that can handle a <typeparamref name="TRequest"/> object
+    /// and returns nothing.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
+    public interface IUseCase<in TRequest>
     {
-        T Create<T>();
-
-        object Create(Type type);
+        /// <summary>
+        /// Executes the use case for the specified input data.
+        /// </summary>
+        /// <param name="request">The object containing the input data for the use case.</param>
+        void Execute(TRequest request);
     }
 }

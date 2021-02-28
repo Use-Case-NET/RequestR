@@ -18,13 +18,15 @@ using System;
 
 namespace DustInTheWind.RequestR
 {
-    public class HandlerNotFoundException : Exception
+    /// <summary>
+    /// This default implementation uses the <see cref="Activator"/> class to create use case instances.
+    /// As a result it can create only use cases that provide a parameterless constructor.
+    /// </summary>
+    public class DefaultUseCaseFactory : UseCaseFactoryBase
     {
-        private const string DefaultMessage = "No handler is registered for the specified request.";
-
-        public HandlerNotFoundException()
-            : base(DefaultMessage)
+        protected override object CreateInternal(Type type)
         {
+            return Activator.CreateInstance(type);
         }
     }
 }

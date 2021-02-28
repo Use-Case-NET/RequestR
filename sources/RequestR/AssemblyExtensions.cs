@@ -21,57 +21,83 @@ using System.Reflection;
 
 namespace DustInTheWind.RequestR
 {
+    /// <summary>
+    /// Contains extension methods for the <see cref="Assembly"/> type.
+    /// </summary>
     public static class AssemblyExtensions
     {
-        public static IEnumerable<Type> GetAllRequestHandlersOrValidators(this Assembly assembly)
+        /// <summary>
+        /// Enumerates all the types that implement the one of the interfaces: <see cref="IUseCase{TRequest}"/>,
+        /// <see cref="IUseCase{TRequest, TResponse}"/>, <see cref="IUseCaseAsync{TRequest}"/>,
+        /// <see cref="IUseCaseAsync{TRequest, TResponse}"/> or <see cref="IRequestValidator{TRequest}"/>.
+        /// </summary>
+        /// <param name="assembly">The assembly to be searched.</param>
+        /// <returns>An enumeration of <see cref="Type"/> objects representing the use case and request validator classes.</returns>
+        public static IEnumerable<Type> GetAllUseCasesAndRequestValidators(this Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             Type[] handlerOrValidatorTypes = assembly.GetTypes()
                 .Where(x => x.IsClass && !x.IsAbstract)
-                .Where(x => x.GetInterfaces().Any(IsRequestHandlerOrValidatorInterface))
+                .Where(x => x.GetInterfaces().Any(IsUseCaseOrValidatorInterface))
                 .ToArray();
 
             foreach (Type handlerOrValidatorType in handlerOrValidatorTypes)
                 yield return handlerOrValidatorType;
         }
 
-        private static bool IsRequestHandlerOrValidatorInterface(Type type)
+        private static bool IsUseCaseOrValidatorInterface(Type type)
         {
             if (!type.IsGenericType)
                 return false;
 
             Type genericTypeDefinition = type.GetGenericTypeDefinition();
 
-            return genericTypeDefinition == typeof(IRequestHandler<,>) ||
-                   genericTypeDefinition == typeof(IRequestHandler<>) ||
+            return genericTypeDefinition == typeof(IUseCase<,>) ||
+                   genericTypeDefinition == typeof(IUseCase<>) ||
+                   genericTypeDefinition == typeof(IUseCaseAsync<,>) ||
+                   genericTypeDefinition == typeof(IUseCaseAsync<>) ||
                    genericTypeDefinition == typeof(IRequestValidator<>);
         }
 
-        public static IEnumerable<Type> GetAllRequestHandlers(this Assembly assembly)
+        /// <summary>
+        /// Enumerates all the types that implement the one of the interfaces: <see cref="IUseCase{TRequest}"/>,
+        /// <see cref="IUseCase{TRequest, TResponse}"/>, <see cref="IUseCaseAsync{TRequest}"/> or
+        /// <see cref="IUseCaseAsync{TRequest, TResponse}"/>.
+        /// </summary>
+        /// <param name="assembly">The assembly to be searched.</param>
+        /// <returns>An enumeration of <see cref="Type"/> objects representing the use case classes.</returns>
+        public static IEnumerable<Type> GetAllUseCases(this Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             Type[] handlerOrValidatorTypes = assembly.GetTypes()
                 .Where(x => x.IsClass && !x.IsAbstract)
-                .Where(x => x.GetInterfaces().Any(IsRequestHandlerInterface))
+                .Where(x => x.GetInterfaces().Any(IsUseCaseInterface))
                 .ToArray();
 
             foreach (Type handlerOrValidatorType in handlerOrValidatorTypes)
                 yield return handlerOrValidatorType;
         }
 
-        private static bool IsRequestHandlerInterface(Type type)
+        private static bool IsUseCaseInterface(Type type)
         {
             if (!type.IsGenericType)
                 return false;
 
             Type genericTypeDefinition = type.GetGenericTypeDefinition();
 
-            return genericTypeDefinition == typeof(IRequestHandler<,>) ||
-                   genericTypeDefinition == typeof(IRequestHandler<>);
+            return genericTypeDefinition == typeof(IUseCase<,>) ||
+                   genericTypeDefinition == typeof(IUseCase<>) ||
+                   genericTypeDefinition == typeof(IUseCaseAsync<,>) ||
+                   genericTypeDefinition == typeof(IUseCaseAsync<>);
         }
 
+        /// <summary>
+        /// Enumerates all the types that implement the <see cref="IRequestValidator{TRequest}"/> interface.
+        /// </summary>
+        /// <param name="assembly">The assembly to be searched.</param>
+        /// <returns>An enumeration of <see cref="Type"/> objects representing the request validator classes.</returns>
         public static IEnumerable<Type> GetAllRequestValidators(this Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
