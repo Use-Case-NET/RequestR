@@ -6,10 +6,13 @@
         <RootNamespace>DustInTheWind.RequestR</RootNamespace>
         <Version>1.0.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Authors>DustInTheWind</Authors>
+        <Authors>Dust in the Wind</Authors>
         <Description>A lightweight library for the Business Layer for processing requests comeing from Presentation Layer.</Description>
         <PackageLicenseFile>license.txt</PackageLicenseFile>
         <PackageTags>mediator;mediator-pattern;request;response;business-layer;use-case;use-cases</PackageTags>
+        <PackageId>RequestR</PackageId>
+        <Product>RequestR</Product>
+        <Copyright>Copyright 2021 Dust in the Wind</Copyright>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
