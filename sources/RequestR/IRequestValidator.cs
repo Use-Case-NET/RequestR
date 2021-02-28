@@ -18,6 +18,6 @@ namespace DustInTheWind.RequestR
 {
     public interface IRequestValidator<in TRequest>
     {
-        public void Validate(TRequest request);
+        void Validate(TRequest request);
     }
 }

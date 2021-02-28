@@ -22,7 +22,27 @@ namespace DustInTheWind.RequestR.Demo
     {
         public List<Product> Handle(PresentProductsRequest request)
         {
-            return new List<Product>();
+            return new List<Product>
+            {
+                new Product
+                {
+                    Name = "Chocolate",
+                    Price = 10,
+                    Quantity = 15
+                },
+                new Product
+                {
+                    Name = "Potato Chips",
+                    Price = 2,
+                    Quantity = 7
+                },
+                new Product
+                {
+                    Name = "Water",
+                    Price = 5,
+                    Quantity = 10
+                }
+            };
         }
     }
 }
