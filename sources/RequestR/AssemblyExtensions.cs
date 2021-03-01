@@ -28,8 +28,7 @@ namespace DustInTheWind.RequestR
     {
         /// <summary>
         /// Enumerates all the types that implement the one of the interfaces: <see cref="IUseCase{TRequest}"/>,
-        /// <see cref="IUseCase{TRequest, TResponse}"/>, <see cref="IUseCaseAsync{TRequest}"/>,
-        /// <see cref="IUseCaseAsync{TRequest, TResponse}"/> or <see cref="IRequestValidator{TRequest}"/>.
+        /// <see cref="IUseCase{TRequest,TResponse}"/> or <see cref="IRequestValidator{TRequest}"/>.
         /// </summary>
         /// <param name="assembly">The assembly to be searched.</param>
         /// <returns>An enumeration of <see cref="Type"/> objects representing the use case and request validator classes.</returns>
@@ -55,15 +54,13 @@ namespace DustInTheWind.RequestR
 
             return genericTypeDefinition == typeof(IUseCase<,>) ||
                    genericTypeDefinition == typeof(IUseCase<>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<,>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<>) ||
                    genericTypeDefinition == typeof(IRequestValidator<>);
         }
 
         /// <summary>
         /// Enumerates all the types that implement the one of the interfaces: <see cref="IUseCase{TRequest}"/>,
-        /// <see cref="IUseCase{TRequest, TResponse}"/>, <see cref="IUseCaseAsync{TRequest}"/> or
-        /// <see cref="IUseCaseAsync{TRequest, TResponse}"/>.
+        /// <see cref="IUseCase{TRequest}"/>, <see cref="IUseCase{TRequest}"/> or
+        /// <see cref="IUseCase{TRequest,TResponse}"/>.
         /// </summary>
         /// <param name="assembly">The assembly to be searched.</param>
         /// <returns>An enumeration of <see cref="Type"/> objects representing the use case classes.</returns>
@@ -88,9 +85,7 @@ namespace DustInTheWind.RequestR
             Type genericTypeDefinition = type.GetGenericTypeDefinition();
 
             return genericTypeDefinition == typeof(IUseCase<,>) ||
-                   genericTypeDefinition == typeof(IUseCase<>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<,>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<>);
+                   genericTypeDefinition == typeof(IUseCase<>);
         }
 
         /// <summary>

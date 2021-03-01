@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DustInTheWind.RequestR
@@ -44,11 +43,13 @@ namespace DustInTheWind.RequestR
 
         public void RegisterUseCase(Type useCaseType)
         {
-            Type interfaceType = useCaseType.GetInterfaces()
-                .FirstOrDefault(x => x.IsGenericType && (x.GetGenericTypeDefinition() == typeof(IUseCase<,>) || x.GetGenericTypeDefinition() == typeof(IUseCase<>)));
+            Type interfaceType = useCaseType.GetUseCaseInterface();
 
             if (interfaceType == null)
-                throw new ArgumentException("The specified type is not a request handler. It must implement one of the " + typeof(IUseCase<,>).FullName + " or " + typeof(IUseCase<>).FullName + " interfaces.", nameof(useCaseType));
+            {
+                string message = "The specified type is not a use case. It must implement one of the " + typeof(IUseCase<,>).FullName + " or " + typeof(IUseCase<>).FullName + " interfaces.";
+                throw new ArgumentException(message, nameof(useCaseType));
+            }
 
             Type requestType = interfaceType.GenericTypeArguments[0];
 
@@ -65,8 +66,7 @@ namespace DustInTheWind.RequestR
 
         public void RegisterValidator(Type validatorType)
         {
-            Type interfaceType = validatorType.GetInterfaces()
-                .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRequestValidator<>));
+            Type interfaceType = validatorType.GetRequestValidatorInterface();
 
             if (interfaceType == null)
                 throw new ArgumentException("The specified type is not a request validator. It must implement the interface " + typeof(IRequestValidator<>).FullName);
@@ -96,10 +96,10 @@ namespace DustInTheWind.RequestR
             switch (useCaseObject)
             {
                 case IUseCase<TRequest, TResponse> useCaseWithResponse:
-                    return useCaseWithResponse.Execute(request);
+                    return useCaseWithResponse.Execute(request).Result;
 
                 case IUseCase<TRequest> useCaseWithoutResponse:
-                    useCaseWithoutResponse.Execute(request);
+                    useCaseWithoutResponse.Execute(request).Wait();
                     return default;
 
                 default:
@@ -123,12 +123,12 @@ namespace DustInTheWind.RequestR
 
             switch (useCaseObject)
             {
-                case IUseCase<TRequest> useCaseWithResponse:
-                    useCaseWithResponse.Execute(request);
+                case IUseCase<TRequest> useCaseWithoutResponse:
+                    useCaseWithoutResponse.Execute(request).Wait();
                     break;
 
-                case IUseCase<TRequest, object> useCaseWithoutResponse:
-                    useCaseWithoutResponse.Execute(request);
+                case IUseCase<TRequest, dynamic> useCaseWithResponse:
+                    useCaseWithResponse.Execute(request).Wait();
                     break;
 
                 default:
@@ -152,10 +152,10 @@ namespace DustInTheWind.RequestR
 
             switch (useCaseObject)
             {
-                case IUseCaseAsync<TRequest, TResponse> useCaseWithResponse:
+                case IUseCase<TRequest, TResponse> useCaseWithResponse:
                     return await useCaseWithResponse.Execute(request);
 
-                case IUseCaseAsync<TRequest> useCaseWithoutResponse:
+                case IUseCase<TRequest> useCaseWithoutResponse:
                     await useCaseWithoutResponse.Execute(request);
                     return default;
 
@@ -180,11 +180,11 @@ namespace DustInTheWind.RequestR
 
             switch (useCaseObject)
             {
-                case IUseCaseAsync<TRequest> useCaseWithoutResponse:
+                case IUseCase<TRequest> useCaseWithoutResponse:
                     await useCaseWithoutResponse.Execute(request);
                     break;
 
-                case IUseCaseAsync<TRequest, object> useCaseWithResponse:
+                case IUseCase<TRequest, dynamic> useCaseWithResponse:
                     await useCaseWithResponse.Execute(request);
                     break;
 

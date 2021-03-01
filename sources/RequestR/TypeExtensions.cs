@@ -13,6 +13,14 @@ namespace DustInTheWind.RequestR
             return type.GetInterfaces().Any(IsUseCaseInterface);
         }
 
+        public static Type GetUseCaseInterface(this Type type)
+        {
+            if (!type.IsClass || type.IsAbstract)
+                return null;
+
+            return type.GetInterfaces().FirstOrDefault(IsUseCaseInterface);
+        }
+
         private static bool IsUseCaseInterface(Type type)
         {
             if (!type.IsGenericType)
@@ -21,9 +29,7 @@ namespace DustInTheWind.RequestR
             Type genericTypeDefinition = type.GetGenericTypeDefinition();
 
             return genericTypeDefinition == typeof(IUseCase<,>) ||
-                   genericTypeDefinition == typeof(IUseCase<>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<,>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<>);
+                   genericTypeDefinition == typeof(IUseCase<>);
         }
 
         public static bool IsRequestValidator(this Type type)
@@ -32,6 +38,14 @@ namespace DustInTheWind.RequestR
                 return false;
 
             return type.GetInterfaces().Any(IsRequestValidatorInterface);
+        }
+
+        public static Type GetRequestValidatorInterface(this Type type)
+        {
+            if (!type.IsClass || type.IsAbstract)
+                return null;
+
+            return type.GetInterfaces().FirstOrDefault(IsRequestValidatorInterface);
         }
 
         private static bool IsRequestValidatorInterface(Type type)
@@ -56,8 +70,6 @@ namespace DustInTheWind.RequestR
 
             return genericTypeDefinition == typeof(IUseCase<,>) ||
                    genericTypeDefinition == typeof(IUseCase<>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<,>) ||
-                   genericTypeDefinition == typeof(IUseCaseAsync<>) ||
                    genericTypeDefinition == typeof(IRequestValidator<>);
         }
     }

@@ -29,7 +29,7 @@ namespace DustInTheWind.RequestR.Demo
 
             // Send request
             PresentProductsRequest request = new PresentProductsRequest();
-            List<Product> products = requestBus.Send<PresentProductsRequest, List<Product>>(request);
+            List<Product> products = requestBus.SendAsync<PresentProductsRequest, List<Product>>(request).Result;
 
             // Display response
             foreach (Product product in products)
