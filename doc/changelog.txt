@@ -1,0 +1,13 @@
+RequestR
+========
+
+Note: For any bug or feature request please add a new issue on GitHub: https://github.com/lastunicorn/RequestR/issues/new/choose
+
+
+ver 1.1.0
+---------
+- [bug-fix] Async request handler was not found when called synchronously.
+
+ver 1.0.0
+---------
+First release

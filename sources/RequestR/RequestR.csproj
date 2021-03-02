@@ -7,12 +7,15 @@
         <Version>1.1.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Dust in the Wind</Authors>
-        <Description>A lightweight library for the Business Layer for processing requests comeing from Presentation Layer.</Description>
+        <Description>A lightweight library to be used in the Business Layer for processing requests coming from the Presentation Layer.</Description>
         <PackageLicenseFile>license.txt</PackageLicenseFile>
-        <PackageTags>mediator;mediator-pattern;request;response;business-layer;use-case;use-cases</PackageTags>
+        <PackageTags>request;response;mediator;mediator-pattern;business-layer;use-case;use-cases</PackageTags>
         <PackageId>RequestR</PackageId>
         <Product>RequestR</Product>
         <Copyright>Copyright 2021 Dust in the Wind</Copyright>
+        <RepositoryUrl>https://github.com/lastunicorn/RequestR</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReleaseNotes>[bug-fix] Async request handler was not found when called synchronously.</PackageReleaseNotes>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
