@@ -29,7 +29,8 @@ namespace DustInTheWind.RequestR.Demo
 
             // Send request
             PresentProductsRequest request = new PresentProductsRequest();
-            List<Product> products = requestBus.SendAsync<PresentProductsRequest, List<Product>>(request).Result;
+            requestBus.Process(request);
+            List<Product> products = requestBus.Process<PresentProductsRequest, List<Product>>(request);
 
             // Display response
             foreach (Product product in products)

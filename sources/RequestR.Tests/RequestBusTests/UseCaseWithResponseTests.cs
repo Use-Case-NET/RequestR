@@ -73,7 +73,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseSynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
-            requestBus.Send(testRequest);
+            requestBus.Process(testRequest);
 
             Assert.True(testUseCase.WasExecuted);
         }
@@ -82,17 +82,18 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseSynchronouslyAndGetIncorrectTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            int response = requestBus.Send<TestRequest, int>(testRequest);
 
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Equal(0, response);
+            Assert.Throws<ResponseCastException>(() =>
+            {
+                requestBus.Process<TestRequest, int>(testRequest);
+            });
         }
 
         [Fact]
         public void CallUseCaseSynchronouslyAndGetCorrectTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            string response = requestBus.Send<TestRequest, string>(testRequest);
+            string response = requestBus.Process<TestRequest, string>(testRequest);
 
             Assert.True(testUseCase.WasExecuted);
             Assert.Equal("response", response);
@@ -102,7 +103,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseAsynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
-            requestBus.SendAsync(testRequest).Wait();
+            requestBus.ProcessAsync(testRequest).Wait();
 
             Assert.True(testUseCase.WasExecuted);
         }
@@ -111,17 +112,18 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseAsynchronouslyAndGetIncorrectTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            int response = requestBus.SendAsync<TestRequest, int>(testRequest).Result;
 
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Equal(0, response);
+            Assert.ThrowsAsync<ResponseCastException>(async () =>
+            {
+                await requestBus.ProcessAsync<TestRequest, int>(testRequest);
+            });
         }
 
         [Fact]
         public void CallUseCaseAsynchronouslyAndGetCorrectTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            string response = requestBus.SendAsync<TestRequest, string>(testRequest).Result;
+            string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
 
             Assert.True(testUseCase.WasExecuted);
             Assert.Equal("response", response);

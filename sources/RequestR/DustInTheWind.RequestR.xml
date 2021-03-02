@@ -88,6 +88,91 @@
             <param name="request">The object containing the input data for the use case.</param>
             <returns>The <see cref="T:System.Threading.Tasks.Task"/> object that represents the asynchronous use case execution. The <see cref="P:System.Threading.Tasks.Task`1.Result"/> contains the use case's response.</returns>
         </member>
+        <member name="T:DustInTheWind.RequestR.RequestBus">
+            <summary>
+            This is the service that received used to execute use cases based on received requests.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.RequestBus"/> class
+            with a default implementation of the use case factory.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.#ctor(DustInTheWind.RequestR.UseCaseFactoryBase)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.RequestBus"/> class
+            with a custom use case factory.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.RegisterUseCase``1">
+            <summary>
+            Adds a new use case type to the internal list of known use cases.
+            Later, when a request is received, a use case type is peeked from this list, instantiated and executed.
+            </summary>
+            <typeparam name="TUseCase">The type of the use case to be added in the list.</typeparam>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.RegisterUseCase(System.Type)">
+            <summary>
+            Adds a new use case type to the internal list of known use cases.
+            Later, when a request is received, a use case type is peeked from this list, instantiated and executed.
+            </summary>
+            <param name="useCaseType">The type of the use case to be added in the list.</param>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.RegisterValidator``1">
+            <summary>
+            Adds a new validator type to the internal list of known validators.
+            Later, when a request is received, the corresponding validator is peeked from the list, instantiated and executed.
+            </summary>
+            <typeparam name="TValidator">The type of the validator to be added in the list.</typeparam>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.RegisterValidator(System.Type)">
+            <summary>
+            Adds a new validator type to the internal list of known validators.
+            Later, when a request is received, the corresponding validator is peeked from the list, instantiated and executed.
+            </summary>
+            <param name="validatorType">The type of the validator to be added in the list.</param>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.Process``2(``0)">
+            <summary>
+            Searches a use case that can handle the specified request, executes it and returns the response.
+            If a validator exists for the request, it is also executed before the use case.
+            </summary>
+            <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+            <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+            <param name="request">The request object for which to execute the use case.</param>
+            <returns>The response object that is returned to the caller.</returns>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.Process``1(``0)">
+            <summary>
+            Searches a use case that can handle the specified request and executes it.
+            If a validator exists for the request, it is also executed before the use case.
+            </summary>
+            <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+            <param name="request">The request object for which to execute the use case.</param>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.ProcessAsync``2(``0)">
+            <summary>
+            Searches a use case that can handle the specified request, executes it asynchronously and returns the response.
+            If a validator exists for the request, it is also executed before the use case.
+            </summary>
+            <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+            <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+            <param name="request">The request object for which to execute the use case.</param>
+            <returns>
+            The <see cref="T:System.Threading.Tasks.Task"/> object representing the asynchronous execution.
+            At the end of the execution, the <see cref="P:System.Threading.Tasks.Task`1.Result"/> will contain the response object of the use case.
+            </returns>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestBus.ProcessAsync``1(``0)">
+            <summary>
+            Searches a use case that can handle the specified request and executes it asynchronously.
+            If a validator exists for the request, it is also executed before the use case.
+            </summary>
+            <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+            <param name="request">The request object for which to execute the use case.</param>
+            <returns>The <see cref="T:System.Threading.Tasks.Task"/> object representing the asynchronous execution.</returns>
+        </member>
         <member name="T:DustInTheWind.RequestR.RequestBusExtensions">
             <summary>
             Contains extension methods for the <see cref="T:DustInTheWind.RequestR.RequestBus"/> type.
@@ -113,6 +198,83 @@
             </summary>
             <param name="requestBus">The <see cref="T:DustInTheWind.RequestR.RequestBus"/> instance where to register the use cases and validators</param>
             <param name="type">A <see cref="T:System.Type"/> instance contained by the assembly to be searched.</param>
+        </member>
+        <member name="T:DustInTheWind.RequestR.RequestRException">
+            <summary>
+            The base exception thrown by the RequestR framework.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestRException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.RequestRException"/>
+            with a default error message.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestRException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.RequestRException"/>
+            with a custom error message.
+            </summary>
+            <param name="message">The message that described the encountered error.</param>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestRException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.RequestRException"/>
+            with a custom error message an an inner exception that is the cause of this exception.
+            </summary>
+            <param name="message">The message that described the current exception.</param>
+            <param name="inner">The exception that caused the current exception.</param>
+        </member>
+        <member name="M:DustInTheWind.RequestR.RequestRException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.RequestRException"/>
+            with serialized data.
+            </summary>
+        </member>
+        <member name="T:DustInTheWind.RequestR.ResponseCastException">
+            <summary>
+            Exception thrown when the requested type is different from the actual type of the response
+            and a cast cannot be performed.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.ResponseCastException.#ctor(System.Type,System.Type,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.ResponseCastException"/> class.
+            </summary>
+            <param name="actualResponseType">The type of the actual response.</param>
+            <param name="requestedResponseType">The type requested to be returned.</param>
+            <param name="inner">The exception that generated the current one.</param>
+        </member>
+        <member name="T:DustInTheWind.RequestR.TypeIsNotUseCaseException">
+            <summary>
+            Exception thrown when the application needs a <see cref="T:System.Type"/> object that represents a use case,
+            but it receives one that does not implement the use case interfaces.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.TypeIsNotUseCaseException.#ctor(System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.TypeIsNotUseCaseException"/> class
+            with the <see cref="T:System.Type"/> instance that is expected to represent a use case, but it doesn't.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> instance that is expected to represent a use case, but it doesn't.</param>
+        </member>
+        <member name="T:DustInTheWind.RequestR.UnusableUseCaseException">
+            <summary>
+            Exception thrown when the use case found in the registered use cases list for the specified request
+            cannot be used to handle the request.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.UnusableUseCaseException.#ctor(System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.UnusableUseCaseException"/> class.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.UnusableUseCaseException.#ctor(System.Type,System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.UnusableUseCaseException"/> class.
+            </summary>
+            <param name="useCaseType">The type of the use case that cannot be used.</param>
+            <param name="requestType">The type of the request for which the use case cannot be used.</param>
         </member>
         <member name="T:DustInTheWind.RequestR.UseCaseAlreadyRegisteredException">
             <summary>
@@ -147,6 +309,26 @@
             </summary>
             <param name="type">The type of the use case to be created.</param>
             <returns>A new instance of the specified use case.</returns>
+        </member>
+        <member name="T:DustInTheWind.RequestR.UseCaseInstantiateException">
+            <summary>
+            Exception thrown when the use case cannot be instantiated.
+            </summary>
+        </member>
+        <member name="M:DustInTheWind.RequestR.UseCaseInstantiateException.#ctor(System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.UseCaseInstantiateException"/> class
+            with the use case type.
+            </summary>
+            <param name="useCaseType">The type of the use case class that could not be instantiated.</param>
+        </member>
+        <member name="M:DustInTheWind.RequestR.UseCaseInstantiateException.#ctor(System.Type,System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DustInTheWind.RequestR.UseCaseInstantiateException"/> class
+            with the use case type.
+            </summary>
+            <param name="useCaseType">The type of the use case class that could not be instantiated.</param>
+            <param name="requestType">The type of the request class for which the use case creation was attempted.</param>
         </member>
         <member name="T:DustInTheWind.RequestR.UseCaseNotFoundException">
             <summary>

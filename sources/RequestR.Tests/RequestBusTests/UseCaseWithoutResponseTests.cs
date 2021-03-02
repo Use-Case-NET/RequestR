@@ -71,7 +71,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseSynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
-            requestBus.Send(testRequest);
+            requestBus.Process(testRequest);
 
             Assert.True(testUseCase.WasExecuted);
         }
@@ -80,7 +80,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseSynchronouslyAndGetValueTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            int response = requestBus.Send<TestRequest, int>(testRequest);
+            int response = requestBus.Process<TestRequest, int>(testRequest);
 
             Assert.True(testUseCase.WasExecuted);
             Assert.Equal(0, response);
@@ -90,7 +90,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseSynchronouslyAndGetReferenceTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            string response = requestBus.Send<TestRequest, string>(testRequest);
+            string response = requestBus.Process<TestRequest, string>(testRequest);
 
             Assert.True(testUseCase.WasExecuted);
             Assert.Null(response);
@@ -100,7 +100,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseAsynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
-            requestBus.SendAsync(testRequest).Wait();
+            requestBus.ProcessAsync(testRequest).Wait();
 
             Assert.True(testUseCase.WasExecuted);
         }
@@ -109,7 +109,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseAsynchronouslyAndGetValueTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            int response = requestBus.SendAsync<TestRequest, int>(testRequest).Result;
+            int response = requestBus.ProcessAsync<TestRequest, int>(testRequest).Result;
 
             Assert.True(testUseCase.WasExecuted);
             Assert.Equal(0, response);
@@ -119,7 +119,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         public void CallUseCaseAsynchronouslyAndGetReferenceTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
-            string response = requestBus.SendAsync<TestRequest, string>(testRequest).Result;
+            string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
 
             Assert.True(testUseCase.WasExecuted);
             Assert.Null(response);

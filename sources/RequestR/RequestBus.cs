@@ -16,31 +16,54 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DustInTheWind.RequestR
 {
+    /// <summary>
+    /// This is the service that received used to execute use cases based on received requests.
+    /// </summary>
     public class RequestBus
     {
         private readonly UseCaseFactoryBase useCaseFactory;
         private readonly Dictionary<Type, Type> useCases = new Dictionary<Type, Type>();
         private readonly Dictionary<Type, Type> validators = new Dictionary<Type, Type>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestBus"/> class
+        /// with a default implementation of the use case factory.
+        /// </summary>
         public RequestBus()
         {
             useCaseFactory = new DefaultUseCaseFactory();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestBus"/> class
+        /// with a custom use case factory.
+        /// </summary>
         public RequestBus(UseCaseFactoryBase useCaseFactory)
         {
             this.useCaseFactory = useCaseFactory ?? throw new ArgumentNullException(nameof(useCaseFactory));
         }
 
-        public void RegisterUseCase<THandler>()
+        /// <summary>
+        /// Adds a new use case type to the internal list of known use cases.
+        /// Later, when a request is received, a use case type is peeked from this list, instantiated and executed.
+        /// </summary>
+        /// <typeparam name="TUseCase">The type of the use case to be added in the list.</typeparam>
+        public void RegisterUseCase<TUseCase>()
         {
-            RegisterUseCase(typeof(THandler));
+            RegisterUseCase(typeof(TUseCase));
         }
 
+        /// <summary>
+        /// Adds a new use case type to the internal list of known use cases.
+        /// Later, when a request is received, a use case type is peeked from this list, instantiated and executed.
+        /// </summary>
+        /// <param name="useCaseType">The type of the use case to be added in the list.</param>
         public void RegisterUseCase(Type useCaseType)
         {
             Type interfaceType = useCaseType.GetUseCaseInterface();
@@ -56,11 +79,21 @@ namespace DustInTheWind.RequestR
             useCases.Add(requestType, useCaseType);
         }
 
+        /// <summary>
+        /// Adds a new validator type to the internal list of known validators.
+        /// Later, when a request is received, the corresponding validator is peeked from the list, instantiated and executed.
+        /// </summary>
+        /// <typeparam name="TValidator">The type of the validator to be added in the list.</typeparam>
         public void RegisterValidator<TValidator>()
         {
             RegisterValidator(typeof(TValidator));
         }
 
+        /// <summary>
+        /// Adds a new validator type to the internal list of known validators.
+        /// Later, when a request is received, the corresponding validator is peeked from the list, instantiated and executed.
+        /// </summary>
+        /// <param name="validatorType">The type of the validator to be added in the list.</param>
         public void RegisterValidator(Type validatorType)
         {
             Type interfaceType = validatorType.GetRequestValidatorInterface();
@@ -76,19 +109,20 @@ namespace DustInTheWind.RequestR
             validators.Add(requestType, validatorType);
         }
 
-        public TResponse Send<TRequest, TResponse>(TRequest request)
+        /// <summary>
+        /// Searches a use case that can handle the specified request, executes it and returns the response.
+        /// If a validator exists for the request, it is also executed before the use case.
+        /// </summary>
+        /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+        /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+        /// <param name="request">The request object for which to execute the use case.</param>
+        /// <returns>The response object that is returned to the caller.</returns>
+        public TResponse Process<TRequest, TResponse>(TRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            Type requestType = typeof(TRequest);
-
-            if (!useCases.ContainsKey(requestType))
-                throw new UseCaseNotFoundException();
-
             ValidateRequest(request);
-
-            Type useCaseType = useCases[requestType];
-            object useCaseObject = useCaseFactory.Create(useCaseType);
+            object useCaseObject = InstantiateUseCaseFor<TRequest>();
 
             switch (useCaseObject)
             {
@@ -100,52 +134,107 @@ namespace DustInTheWind.RequestR
                     return default;
 
                 default:
-                    throw new UnusableUseCaseException(requestType);
+                    {
+                        Type useCaseInterfaceType = useCaseObject.GetType().GetUseCaseInterface();
+
+                        if (useCaseInterfaceType.GetGenericTypeDefinition() == typeof(IUseCase<,>))
+                        {
+                            MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
+                                .Single(x => IsExecuteMethod(x, typeof(TRequest)));
+
+                            Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                            task.Wait();
+
+                            PropertyInfo resultProperty = task.GetType().GetProperty("Result");
+                            object responseObject = resultProperty.GetValue(task);
+
+                            try
+                            {
+                                return (TResponse)Convert.ChangeType(responseObject, typeof(TResponse));
+                            }
+                            catch (Exception ex)
+                            {
+                                Type actualResponseType = responseObject.GetType();
+                                Type requestedResponseType = typeof(TResponse);
+
+                                throw new ResponseCastException(actualResponseType, requestedResponseType, ex);
+                            }
+                        }
+
+                        throw new UnusableUseCaseException(useCaseObject.GetType(), typeof(TRequest));
+                    }
             }
         }
 
-        public void Send<TRequest>(TRequest request)
+        /// <summary>
+        /// Searches a use case that can handle the specified request and executes it.
+        /// If a validator exists for the request, it is also executed before the use case.
+        /// </summary>
+        /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+        /// <param name="request">The request object for which to execute the use case.</param>
+        public void Process<TRequest>(TRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            Type requestType = typeof(TRequest);
-
-            if (!useCases.ContainsKey(requestType))
-                throw new UseCaseNotFoundException();
-
             ValidateRequest(request);
+            object useCaseObject = InstantiateUseCaseFor<TRequest>();
 
-            Type useCaseType = useCases[requestType];
-            object useCaseObject = useCaseFactory.Create(useCaseType);
-
-            switch (useCaseObject)
+            if (useCaseObject is IUseCase<TRequest> useCaseWithoutResponse)
             {
-                case IUseCase<TRequest> useCaseWithoutResponse:
-                    useCaseWithoutResponse.Execute(request).Wait();
-                    break;
+                useCaseWithoutResponse.Execute(request).Wait();
+            }
+            else
+            {
+                Type useCaseInterfaceType = useCaseObject.GetType().GetUseCaseInterface();
 
-                case IUseCase<TRequest, dynamic> useCaseWithResponse:
-                    useCaseWithResponse.Execute(request).Wait();
-                    break;
+                if (useCaseInterfaceType.GetGenericTypeDefinition() == typeof(IUseCase<,>))
+                {
+                    MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
+                        .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                default:
-                    throw new UnusableUseCaseException(requestType);
+                    Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                    task.Wait();
+                }
+                else
+                {
+                    throw new UnusableUseCaseException(useCaseObject.GetType(), typeof(TRequest));
+                }
             }
         }
 
-        public async Task<TResponse> SendAsync<TRequest, TResponse>(TRequest request)
+        private static bool IsExecuteMethod(MethodInfo methodInfo, Type requestType)
+        {
+            if (methodInfo.Name != "Execute")
+                return false;
+
+            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+
+            if (parameterInfos.Length != 1)
+                return false;
+
+            if (parameterInfos[0].ParameterType != requestType)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Searches a use case that can handle the specified request, executes it asynchronously and returns the response.
+        /// If a validator exists for the request, it is also executed before the use case.
+        /// </summary>
+        /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+        /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+        /// <param name="request">The request object for which to execute the use case.</param>
+        /// <returns>
+        /// The <see cref="Task"/> object representing the asynchronous execution.
+        /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
+        /// </returns>
+        public async Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            Type requestType = typeof(TRequest);
-
-            if (!useCases.ContainsKey(requestType))
-                throw new UseCaseNotFoundException();
-
             ValidateRequest(request);
-
-            Type useCaseType = useCases[requestType];
-            object useCaseObject = useCaseFactory.Create(useCaseType);
+            object useCaseObject = InstantiateUseCaseFor<TRequest>();
 
             switch (useCaseObject)
             {
@@ -157,36 +246,72 @@ namespace DustInTheWind.RequestR
                     return default;
 
                 default:
-                    throw new UnusableUseCaseException(requestType);
+                    {
+                        Type useCaseInterfaceType = useCaseObject.GetType().GetUseCaseInterface();
+
+                        if (useCaseInterfaceType.GetGenericTypeDefinition() == typeof(IUseCase<,>))
+                        {
+                            MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
+                                .Single(x => IsExecuteMethod(x, typeof(TRequest)));
+
+                            Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                            await task;
+
+                            PropertyInfo resultProperty = task.GetType().GetProperty("Result");
+                            object responseObject = resultProperty.GetValue(task);
+
+                            try
+                            {
+                                return (TResponse)Convert.ChangeType(responseObject, typeof(TResponse));
+                            }
+                            catch (Exception ex)
+                            {
+                                Type actualResponseType = responseObject.GetType();
+                                Type requestedResponseType = typeof(TResponse);
+
+                                throw new ResponseCastException(actualResponseType, requestedResponseType, ex);
+                            }
+                        }
+
+                        throw new UnusableUseCaseException(useCaseObject.GetType(), typeof(TRequest));
+                    }
             }
         }
 
-        public async Task SendAsync<TRequest>(TRequest request)
+        /// <summary>
+        /// Searches a use case that can handle the specified request and executes it asynchronously.
+        /// If a validator exists for the request, it is also executed before the use case.
+        /// </summary>
+        /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+        /// <param name="request">The request object for which to execute the use case.</param>
+        /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
+        public async Task ProcessAsync<TRequest>(TRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            Type requestType = typeof(TRequest);
-
-            if (!useCases.ContainsKey(requestType))
-                throw new UseCaseNotFoundException();
-
             ValidateRequest(request);
+            object useCaseObject = InstantiateUseCaseFor<TRequest>();
 
-            Type useCaseType = useCases[requestType];
-            object useCaseObject = useCaseFactory.Create(useCaseType);
-
-            switch (useCaseObject)
+            if (useCaseObject is IUseCase<TRequest> useCaseWithoutResponse)
             {
-                case IUseCase<TRequest> useCaseWithoutResponse:
-                    await useCaseWithoutResponse.Execute(request);
-                    break;
+                await useCaseWithoutResponse.Execute(request);
+            }
+            else
+            {
+                Type useCaseInterfaceType = useCaseObject.GetType().GetUseCaseInterface();
 
-                case IUseCase<TRequest, dynamic> useCaseWithResponse:
-                    await useCaseWithResponse.Execute(request);
-                    break;
+                if (useCaseInterfaceType.GetGenericTypeDefinition() == typeof(IUseCase<,>))
+                {
+                    MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
+                        .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                default:
-                    throw new UnusableUseCaseException(requestType);
+                    Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                    task.Wait();
+                }
+                else
+                {
+                    throw new UnusableUseCaseException(useCaseObject.GetType(), typeof(TRequest));
+                }
             }
         }
 
@@ -204,6 +329,23 @@ namespace DustInTheWind.RequestR
 
             if (validatorObject is IRequestValidator<TRequest> validator)
                 validator.Validate(request);
+        }
+
+        private object InstantiateUseCaseFor<TRequest>()
+        {
+            Type requestType = typeof(TRequest);
+
+            if (!useCases.ContainsKey(requestType))
+                throw new UseCaseNotFoundException();
+
+            Type useCaseType = useCases[requestType];
+
+            object useCaseObject = useCaseFactory.Create(useCaseType);
+
+            if (useCaseObject == null)
+                throw new UseCaseInstantiateException(useCaseType, requestType);
+
+            return useCaseObject;
         }
     }
 }
