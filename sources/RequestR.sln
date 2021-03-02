@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestR", "RequestR\RequestR.csproj", "{E696AE7B-DB35-47F9-AF2C-D495E7BC5EDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestR.Demo", "RequestR.Demo\RequestR.Demo.csproj", "{1726F483-6FC1-46F9-ABBB-0BD0910109E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestR.Demo", "RequestR.Demo\RequestR.Demo.csproj", "{1726F483-6FC1-46F9-ABBB-0BD0910109E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestR.Tests", "RequestR.Tests\RequestR.Tests.csproj", "{A6915313-5AF5-4276-A690-FE9DFE12554E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1726F483-6FC1-46F9-ABBB-0BD0910109E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1726F483-6FC1-46F9-ABBB-0BD0910109E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1726F483-6FC1-46F9-ABBB-0BD0910109E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6915313-5AF5-4276-A690-FE9DFE12554E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6915313-5AF5-4276-A690-FE9DFE12554E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6915313-5AF5-4276-A690-FE9DFE12554E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6915313-5AF5-4276-A690-FE9DFE12554E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

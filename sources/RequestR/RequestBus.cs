@@ -44,11 +44,10 @@ namespace DustInTheWind.RequestR
 
         public void RegisterHandler(Type requestHandlerType)
         {
-            Type interfaceType = requestHandlerType.GetInterfaces()
-                .FirstOrDefault(x => x.IsGenericType && (x.GetGenericTypeDefinition() == typeof(IRequestHandler<,>) || x.GetGenericTypeDefinition() == typeof(IRequestHandler<>)));
-
+            Type interfaceType = requestHandlerType.GetRequestHandlerInterface(); 
+            
             if (interfaceType == null)
-                throw new ArgumentException("The specified type is not a request handler. It must implement one of the " + typeof(IRequestHandler<,>).FullName + " or " + typeof(IRequestHandler<>).FullName + " interfaces.", nameof(requestHandlerType));
+                throw new TypeIsNotRequestHandlerException(requestHandlerType);
 
             Type requestType = interfaceType.GenericTypeArguments[0];
 
@@ -102,6 +101,13 @@ namespace DustInTheWind.RequestR
                     requestHandlerWithoutResponse.Handle(request);
                     return default;
 
+                case IRequestHandlerAsync<TRequest, TResponse> requestHandlerWithResponse:
+                    return requestHandlerWithResponse.Handle(request).Result;
+
+                case IRequestHandlerAsync<TRequest> requestHandlerWithoutResponse:
+                    requestHandlerWithoutResponse.Handle(request).Wait();
+                    return default;
+
                 default:
                     throw new UnusableRequestHandlerException(requestType);
             }
@@ -131,6 +137,14 @@ namespace DustInTheWind.RequestR
                     requestHandlerWithoutResponse.Handle(request);
                     break;
 
+                case IRequestHandlerAsync<TRequest> requestHandlerWithResponse:
+                    requestHandlerWithResponse.Handle(request).Wait();
+                    break;
+
+                case IRequestHandlerAsync<TRequest, object> requestHandlerWithoutResponse:
+                    requestHandlerWithoutResponse.Handle(request).Wait();
+                    break;
+
                 default:
                     throw new UnusableRequestHandlerException(requestType);
             }
@@ -152,6 +166,13 @@ namespace DustInTheWind.RequestR
 
             switch (requestHandler)
             {
+                case IRequestHandler<TRequest, TResponse> requestHandlerWithResponse:
+                    return requestHandlerWithResponse.Handle(request);
+
+                case IRequestHandler<TRequest> requestHandlerWithoutResponse:
+                    requestHandlerWithoutResponse.Handle(request);
+                    return default;
+                    
                 case IRequestHandlerAsync<TRequest, TResponse> requestHandlerWithResponse:
                     return await requestHandlerWithResponse.Handle(request);
 
@@ -180,6 +201,14 @@ namespace DustInTheWind.RequestR
 
             switch (requestHandler)
             {
+                case IRequestHandler<TRequest> requestHandlerWithoutResponse:
+                    requestHandlerWithoutResponse.Handle(request);
+                    break;
+
+                case IRequestHandler<TRequest, object> requestHandlerWithResponse:
+                    requestHandlerWithResponse.Handle(request);
+                    break;
+
                 case IRequestHandlerAsync<TRequest> requestHandlerWithoutResponse:
                     await requestHandlerWithoutResponse.Handle(request);
                     break;
