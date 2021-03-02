@@ -4,6 +4,7 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>DustInTheWind.RequestR.Tests</AssemblyName>
         <RootNamespace>DustInTheWind.RequestR.Tests</RootNamespace>
+        <Version>1.1.0</Version>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>

@@ -5,6 +5,7 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>DustInTheWind.RequestR.Demo</AssemblyName>
         <RootNamespace>DustInTheWind.RequestR.Demo</RootNamespace>
+        <Version>1.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
