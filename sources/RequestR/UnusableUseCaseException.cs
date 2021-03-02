@@ -23,13 +23,11 @@ namespace DustInTheWind.RequestR
         public UnusableUseCaseException()
             : base("There is no use case for the specified request.")
         {
-
         }
 
         public UnusableUseCaseException(Type requestType)
             : base($"There is no use case for the specified request. Request type: {requestType}")
         {
-
         }
     }
 }
