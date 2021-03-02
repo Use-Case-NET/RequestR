@@ -16,8 +16,17 @@
 
 namespace DustInTheWind.RequestR
 {
+    /// <summary>
+    /// Provides validation for the use case request of type <typeparamref name="TRequest"/>.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request that is validated.</typeparam>
     public interface IRequestValidator<in TRequest>
     {
+        /// <summary>
+        /// Performs the validation of the use case request.
+        /// If validation fails, an exception is thrown.
+        /// </summary>
+        /// <param name="request">The request instance that is being validated.</param>
         void Validate(TRequest request);
     }
 }

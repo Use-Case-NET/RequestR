@@ -20,7 +20,7 @@ using Xunit;
 
 namespace DustInTheWind.RequestR.Tests.RequestBusTests
 {
-    public class RequestHandlerWithoutResponseTests
+    public class UseCaseWithoutResponseTests
     {
         #region Request, Use Case, Use Case Factory
 
@@ -28,11 +28,11 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         {
         }
 
-        private class TestRequestHandler : IRequestHandlerAsync<TestRequest>
+        private class TestUseCase : IUseCase<TestRequest>
         {
             public bool WasExecuted { get; private set; }
 
-            public async Task Handle(TestRequest request)
+            public async Task Execute(TestRequest request)
             {
                 await Task.Delay(100);
 
@@ -40,93 +40,88 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
             }
         }
 
-        private class RequestHandlerFactoryMock : IRequestHandlerFactory
+        private class UseCaseFactoryMock : UseCaseFactoryBase
         {
-            public TestRequestHandler RequestHandler { get; set; }
+            public IUseCase<TestRequest> UseCase { get; set; }
 
-            public T Create<T>()
+            protected override object CreateInternal(Type type)
             {
-                return default;
-            }
-
-            public object Create(Type type)
-            {
-                return RequestHandler;
+                return UseCase;
             }
         }
 
         #endregion
 
-        private readonly TestRequestHandler testRequestHandler;
+        private readonly TestUseCase testUseCase;
         private readonly RequestBus requestBus;
 
-        public RequestHandlerWithoutResponseTests()
+        public UseCaseWithoutResponseTests()
         {
-            testRequestHandler = new TestRequestHandler();
-            RequestHandlerFactoryMock requestHandlerFactory = new RequestHandlerFactoryMock
+            testUseCase = new TestUseCase();
+            UseCaseFactoryMock useCaseFactory = new UseCaseFactoryMock
             {
-                RequestHandler = testRequestHandler
+                UseCase = testUseCase
             };
-            requestBus = new RequestBus(requestHandlerFactory);
+            requestBus = new RequestBus(useCaseFactory);
 
-            requestBus.RegisterHandler<TestRequestHandler>();
+            requestBus.RegisterUseCase<TestUseCase>();
         }
 
         [Fact]
-        public void CallRequestHandlerSynchronouslyWithoutResponse()
+        public void CallUseCaseSynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
             requestBus.Send(testRequest);
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
         }
 
         [Fact]
-        public void CallRequestHandlerSynchronouslyAndGetValueTypeResponse()
+        public void CallUseCaseSynchronouslyAndGetValueTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
             int response = requestBus.Send<TestRequest, int>(testRequest);
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Equal(0, response);
         }
 
         [Fact]
-        public void CallRequestHandlerSynchronouslyAndGetReferenceTypeResponse()
+        public void CallUseCaseSynchronouslyAndGetReferenceTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
             string response = requestBus.Send<TestRequest, string>(testRequest);
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Null(response);
         }
 
         [Fact]
-        public void CallRequestHandlerAsynchronouslyWithoutResponse()
+        public void CallUseCaseAsynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
             requestBus.SendAsync(testRequest).Wait();
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
         }
 
         [Fact]
-        public void CallRequestHandlerAsynchronouslyAndGetValueTypeResponse()
+        public void CallUseCaseAsynchronouslyAndGetValueTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
             int response = requestBus.SendAsync<TestRequest, int>(testRequest).Result;
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Equal(0, response);
         }
 
         [Fact]
-        public void CallRequestHandlerAsynchronouslyAndGetReferenceTypeResponse()
+        public void CallUseCaseAsynchronouslyAndGetReferenceTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
             string response = requestBus.SendAsync<TestRequest, string>(testRequest).Result;
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Null(response);
         }
     }

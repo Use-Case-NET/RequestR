@@ -25,11 +25,11 @@ namespace DustInTheWind.RequestR.Demo
         {
             // Setup request bus
             RequestBus requestBus = new RequestBus();
-            requestBus.RegisterHandler<PresentProductsRequestHandler>();
+            requestBus.RegisterUseCase<PresentProductsUseCase>();
 
             // Send request
             PresentProductsRequest request = new PresentProductsRequest();
-            List<Product> products = requestBus.Send<PresentProductsRequest, List<Product>>(request);
+            List<Product> products = requestBus.SendAsync<PresentProductsRequest, List<Product>>(request).Result;
 
             // Display response
             foreach (Product product in products)

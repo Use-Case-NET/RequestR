@@ -18,8 +18,18 @@ using System.Threading.Tasks;
 
 namespace DustInTheWind.RequestR
 {
-    public interface IRequestHandlerAsync<in TRequest, TResponse>
+    /// <summary>
+    /// Implements a use case that can handle asynchronously a <typeparamref name="TRequest"/> object
+    /// and returns nothing.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
+    public interface IUseCase<in TRequest>
     {
-        Task<TResponse> Handle(TRequest request);
+        /// <summary>
+        /// Asynchronously executes the use case for the specified input data.
+        /// </summary>
+        /// <param name="request">The object containing the input data for the use case.</param>
+        /// <returns>The <see cref="Task"/> object that represents the asynchronous use case execution.</returns>
+        Task Execute(TRequest request);
     }
 }

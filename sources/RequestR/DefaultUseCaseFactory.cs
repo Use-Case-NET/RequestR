@@ -18,14 +18,18 @@ using System;
 
 namespace DustInTheWind.RequestR
 {
-    public class DefaultRequestHandlerFactory : IRequestHandlerFactory
+    /// <summary>
+    /// This default implementation uses the <see cref="Activator"/> class to create use case instances.
+    /// As a result it can create only use cases that provide a parameterless constructor.
+    /// </summary>
+    public class DefaultUseCaseFactory : UseCaseFactoryBase
     {
-        public T Create<T>()
-        {
-            return Activator.CreateInstance<T>();
-        }
-
-        public object Create(Type type)
+        /// <summary>
+        /// Creates a new instance of the specified use case type, using the <see cref="Activator"/> class.
+        /// </summary>
+        /// <param name="type">The type of the use case to be created.</param>
+        /// <returns>A new instance of the specified use case.</returns>
+        protected override object CreateInternal(Type type)
         {
             return Activator.CreateInstance(type);
         }

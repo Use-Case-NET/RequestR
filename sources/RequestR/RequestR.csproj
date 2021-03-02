@@ -4,7 +4,7 @@
         <TargetFrameworks>netcoreapp3.1;net462;netstandard2.1</TargetFrameworks>
         <AssemblyName>DustInTheWind.RequestR</AssemblyName>
         <RootNamespace>DustInTheWind.RequestR</RootNamespace>
-        <Version>1.1.0</Version>
+        <Version>2.0.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Dust in the Wind</Authors>
         <Description>A lightweight library to be used in the Business Layer for processing requests coming from the Presentation Layer.</Description>

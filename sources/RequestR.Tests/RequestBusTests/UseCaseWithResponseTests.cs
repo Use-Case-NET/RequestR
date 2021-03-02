@@ -20,7 +20,7 @@ using Xunit;
 
 namespace DustInTheWind.RequestR.Tests.RequestBusTests
 {
-    public class RequestHandlerWithResponseTests
+    public class UseCaseWithResponseTests
     {
         #region Request, Use Case, Use Case Factory
 
@@ -28,11 +28,11 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         {
         }
 
-        private class TestRequestHandler : IRequestHandlerAsync<TestRequest, string>
+        private class TestUseCase : IUseCase<TestRequest, string>
         {
             public bool WasExecuted { get; private set; }
 
-            public async Task<string> Handle(TestRequest request)
+            public async Task<string> Execute(TestRequest request)
             {
                 await Task.Delay(100);
 
@@ -42,54 +42,49 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
             }
         }
 
-        private class RequestHandlerFactoryMock : IRequestHandlerFactory
+        private class UseCaseFactoryMock : UseCaseFactoryBase
         {
-            public TestRequestHandler RequestHandler { get; set; }
+            public IUseCase<TestRequest, string> UseCase { get; set; }
 
-            public T Create<T>()
+            protected override object CreateInternal(Type type)
             {
-                return default;
-            }
-
-            public object Create(Type type)
-            {
-                return RequestHandler;
+                return UseCase;
             }
         }
 
         #endregion
 
-        private readonly TestRequestHandler testRequestHandler;
+        private readonly TestUseCase testUseCase;
         private readonly RequestBus requestBus;
 
-        public RequestHandlerWithResponseTests()
+        public UseCaseWithResponseTests()
         {
-            testRequestHandler = new TestRequestHandler();
-            RequestHandlerFactoryMock requestHandlerFactory = new RequestHandlerFactoryMock
+            testUseCase = new TestUseCase();
+            UseCaseFactoryMock useCaseFactory = new UseCaseFactoryMock
             {
-                RequestHandler = testRequestHandler
+                UseCase = testUseCase
             };
-            requestBus = new RequestBus(requestHandlerFactory);
+            requestBus = new RequestBus(useCaseFactory);
 
-            requestBus.RegisterHandler<TestRequestHandler>();
+            requestBus.RegisterUseCase<TestUseCase>();
         }
 
         [Fact]
-        public void CallRequestHandlerSynchronouslyWithoutResponse()
+        public void CallUseCaseSynchronouslyWithoutResponse()
         {
             TestRequest testRequest = new TestRequest();
             requestBus.Send(testRequest);
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
         }
 
         [Fact]
-        public void CallRequestHandlerSynchronouslyAndGetIncorrectTypeResponse()
+        public void CallUseCaseSynchronouslyAndGetIncorrectTypeResponse()
         {
             TestRequest testRequest = new TestRequest();
             int response = requestBus.Send<TestRequest, int>(testRequest);
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Equal(0, response);
         }
 
@@ -99,7 +94,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
             TestRequest testRequest = new TestRequest();
             string response = requestBus.Send<TestRequest, string>(testRequest);
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Equal("response", response);
         }
 
@@ -109,7 +104,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
             TestRequest testRequest = new TestRequest();
             requestBus.SendAsync(testRequest).Wait();
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
         }
 
         [Fact]
@@ -118,7 +113,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
             TestRequest testRequest = new TestRequest();
             int response = requestBus.SendAsync<TestRequest, int>(testRequest).Result;
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Equal(0, response);
         }
 
@@ -128,7 +123,7 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
             TestRequest testRequest = new TestRequest();
             string response = requestBus.SendAsync<TestRequest, string>(testRequest).Result;
 
-            Assert.True(testRequestHandler.WasExecuted);
+            Assert.True(testUseCase.WasExecuted);
             Assert.Equal("response", response);
         }
     }

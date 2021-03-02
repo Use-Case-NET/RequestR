@@ -18,11 +18,18 @@ using System;
 
 namespace DustInTheWind.RequestR
 {
-    public class ValidationException : Exception
+    public class UnusableUseCaseException : RequestRException
     {
-        public ValidationException(string message)
-            : base(message)
+        public UnusableUseCaseException()
+            : base("There is no use case for the specified request.")
         {
+
+        }
+
+        public UnusableUseCaseException(Type requestType)
+            : base($"There is no use case for the specified request. Request type: {requestType}")
+        {
+
         }
     }
 }

@@ -18,18 +18,20 @@ using System;
 
 namespace DustInTheWind.RequestR
 {
-    public class UnusableRequestHandlerException : Exception
+    /// <summary>
+    /// This exception is thrown by <see cref="RequestBus"/> when no use case was registered
+    /// for the specified request.
+    /// </summary>
+    public class UseCaseNotFoundException : RequestRException
     {
-        public UnusableRequestHandlerException()
-            : base("There is no requestHandler for the specified request.")
+        private const string DefaultMessage = "No use case is registered for the specified request.";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UseCaseNotFoundException"/> class.
+        /// </summary>
+        public UseCaseNotFoundException()
+            : base(DefaultMessage)
         {
-
-        }
-
-        public UnusableRequestHandlerException(Type requestType)
-            : base($"There is no requestHandler for the specified request. Request type: {requestType}")
-        {
-
         }
     }
 }

@@ -3,6 +3,10 @@ RequestR
 
 Note: For any bug or feature request please add a new issue on GitHub: https://github.com/lastunicorn/RequestR/issues/new/choose
 
+ver 2.0.0
+---------
+- [feature] Renamed the IRequestHandler interfaces to IUseCase.
+- [feature] Removed the synchronous use case interfaces. Only async ones remain.
 
 ver 1.1.0
 ---------
