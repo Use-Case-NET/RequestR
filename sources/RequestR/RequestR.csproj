@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        
         <TargetFrameworks>netcoreapp3.1;net462;netstandard2.1</TargetFrameworks>
         <AssemblyName>DustInTheWind.RequestR</AssemblyName>
         <RootNamespace>DustInTheWind.RequestR</RootNamespace>
-        <Version>2.0.0</Version>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Authors>Dust in the Wind</Authors>
+
         <Description>A lightweight library to be used in the Business Layer for processing requests coming from the Presentation Layer.</Description>
+
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>RequestR</PackageId>
+        <PackageReleaseNotes>[bug-fix] Async request handler was not found when called synchronously.</PackageReleaseNotes>
         <PackageLicenseFile>license.txt</PackageLicenseFile>
         <PackageTags>request;response;mediator;mediator-pattern;business-layer;use-case;use-cases</PackageTags>
-        <PackageId>RequestR</PackageId>
-        <Product>RequestR</Product>
-        <Copyright>Copyright 2021 Dust in the Wind</Copyright>
+
         <RepositoryUrl>https://github.com/lastunicorn/RequestR</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageReleaseNotes>[bug-fix] Async request handler was not found when called synchronously.</PackageReleaseNotes>
+        
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,6 +26,8 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DocumentationFile>DustInTheWind.RequestR.xml</DocumentationFile>
     </PropertyGroup>
+
+    <Import Project="..\RequestR.proj" />
 
     <ItemGroup>
         <None Include="..\license.txt">

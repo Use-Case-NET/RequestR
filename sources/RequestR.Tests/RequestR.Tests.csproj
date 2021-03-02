@@ -4,10 +4,11 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>DustInTheWind.RequestR.Tests</AssemblyName>
         <RootNamespace>DustInTheWind.RequestR.Tests</RootNamespace>
-        <Version>1.1.0</Version>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+
+    <Import Project="..\RequestR.proj" />
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />

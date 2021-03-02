@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace DustInTheWind.RequestR
 {
     /// <summary>
-    /// This is the service that received used to execute use cases based on received requests.
+    /// This is the service that is used to execute use cases based on received requests.
     /// </summary>
     public class RequestBus
     {

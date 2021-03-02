@@ -5,8 +5,11 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>DustInTheWind.RequestR.Demo</AssemblyName>
         <RootNamespace>DustInTheWind.RequestR.Demo</RootNamespace>
-        <Version>1.1.0</Version>
+
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
+
+    <Import Project="..\RequestR.proj" />
 
     <ItemGroup>
         <ProjectReference Include="..\RequestR\RequestR.csproj" />
