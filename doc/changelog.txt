@@ -7,6 +7,7 @@ ver 2.0.0
 ---------
 - [feature] Renamed the IRequestHandler interfaces to IUseCase.
 - [feature] Removed the synchronous use case interfaces. Only async ones remain.
+- [bug-fix] Fixed the execution of requests when use case has response but is not needed.
 
 ver 1.1.0
 ---------
