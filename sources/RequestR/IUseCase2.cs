@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DustInTheWind.RequestR
@@ -31,6 +32,6 @@ namespace DustInTheWind.RequestR
         /// </summary>
         /// <param name="request">The object containing the input data for the use case.</param>
         /// <returns>The <see cref="Task"/> object that represents the asynchronous use case execution. The <see cref="Task{T}.Result"/> contains the use case's response.</returns>
-        Task<TResponse> Execute(TRequest request);
+        Task<TResponse> Execute(TRequest request, CancellationToken cancellationToken);
     }
 }

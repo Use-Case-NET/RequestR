@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,9 +33,9 @@ namespace DustInTheWind.RequestR.Tests.RequestBusTests
         {
             public bool WasExecuted { get; private set; }
 
-            public async Task<string> Execute(TestRequest request)
+            public async Task<string> Execute(TestRequest request, CancellationToken cancellationToken)
             {
-                await Task.Delay(100);
+                await Task.Delay(100, cancellationToken);
 
                 WasExecuted = true;
 

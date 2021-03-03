@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DustInTheWind.RequestR
@@ -127,11 +128,15 @@ namespace DustInTheWind.RequestR
             switch (useCaseObject)
             {
                 case IUseCase<TRequest, TResponse> useCaseWithResponse:
-                    return useCaseWithResponse.Execute(request).Result;
+                    {
+                        return useCaseWithResponse.Execute(request, CancellationToken.None).Result;
+                    }
 
                 case IUseCase<TRequest> useCaseWithoutResponse:
-                    useCaseWithoutResponse.Execute(request).Wait();
-                    return default;
+                    {
+                        useCaseWithoutResponse.Execute(request, CancellationToken.None).Wait();
+                        return default;
+                    }
 
                 default:
                     {
@@ -142,7 +147,7 @@ namespace DustInTheWind.RequestR
                             MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
                                 .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                            Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                            Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request, CancellationToken.None });
                             task.Wait();
 
                             PropertyInfo resultProperty = task.GetType().GetProperty("Result");
@@ -181,7 +186,7 @@ namespace DustInTheWind.RequestR
 
             if (useCaseObject is IUseCase<TRequest> useCaseWithoutResponse)
             {
-                useCaseWithoutResponse.Execute(request).Wait();
+                useCaseWithoutResponse.Execute(request, CancellationToken.None).Wait();
             }
             else
             {
@@ -192,7 +197,7 @@ namespace DustInTheWind.RequestR
                     MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
                         .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                    Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                    Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request, CancellationToken.None });
                     task.Wait();
                 }
                 else
@@ -209,7 +214,7 @@ namespace DustInTheWind.RequestR
 
             ParameterInfo[] parameterInfos = methodInfo.GetParameters();
 
-            if (parameterInfos.Length != 1)
+            if (parameterInfos.Length != 2)
                 return false;
 
             if (parameterInfos[0].ParameterType != requestType)
@@ -229,7 +234,23 @@ namespace DustInTheWind.RequestR
         /// The <see cref="Task"/> object representing the asynchronous execution.
         /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
         /// </returns>
-        public async Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request)
+        public Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request)
+        {
+            return ProcessAsync<TRequest, TResponse>(request, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Searches a use case that can handle the specified request, executes it asynchronously and returns the response.
+        /// If a validator exists for the request, it is also executed before the use case.
+        /// </summary>
+        /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+        /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+        /// <param name="request">The request object for which to execute the use case.</param>
+        /// <returns>
+        /// The <see cref="Task"/> object representing the asynchronous execution.
+        /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
+        /// </returns>
+        public async Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -239,10 +260,10 @@ namespace DustInTheWind.RequestR
             switch (useCaseObject)
             {
                 case IUseCase<TRequest, TResponse> useCaseWithResponse:
-                    return await useCaseWithResponse.Execute(request);
+                    return await useCaseWithResponse.Execute(request, cancellationToken);
 
                 case IUseCase<TRequest> useCaseWithoutResponse:
-                    await useCaseWithoutResponse.Execute(request);
+                    await useCaseWithoutResponse.Execute(request, cancellationToken);
                     return default;
 
                 default:
@@ -254,7 +275,7 @@ namespace DustInTheWind.RequestR
                             MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
                                 .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                            Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
+                            Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request, cancellationToken });
                             await task;
 
                             PropertyInfo resultProperty = task.GetType().GetProperty("Result");
@@ -285,7 +306,19 @@ namespace DustInTheWind.RequestR
         /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
         /// <param name="request">The request object for which to execute the use case.</param>
         /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
-        public async Task ProcessAsync<TRequest>(TRequest request)
+        public Task ProcessAsync<TRequest>(TRequest request)
+        {
+            return ProcessAsync(request, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Searches a use case that can handle the specified request and executes it asynchronously.
+        /// If a validator exists for the request, it is also executed before the use case.
+        /// </summary>
+        /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+        /// <param name="request">The request object for which to execute the use case.</param>
+        /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
+        public async Task ProcessAsync<TRequest>(TRequest request, CancellationToken cancellationToken)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -294,7 +327,7 @@ namespace DustInTheWind.RequestR
 
             if (useCaseObject is IUseCase<TRequest> useCaseWithoutResponse)
             {
-                await useCaseWithoutResponse.Execute(request);
+                await useCaseWithoutResponse.Execute(request, cancellationToken);
             }
             else
             {
@@ -305,8 +338,7 @@ namespace DustInTheWind.RequestR
                     MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
                         .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                    Task task = (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request });
-                    task.Wait();
+                    await (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request, cancellationToken });
                 }
                 else
                 {

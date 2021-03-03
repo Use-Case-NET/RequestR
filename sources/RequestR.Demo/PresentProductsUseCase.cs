@@ -15,13 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DustInTheWind.RequestR.Demo
 {
     internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, List<Product>>
     {
-        public Task<List<Product>> Execute(PresentProductsRequest request)
+        public Task<List<Product>> Execute(PresentProductsRequest request, CancellationToken cancellationToken)
         {
             List<Product> products = new List<Product>
             {

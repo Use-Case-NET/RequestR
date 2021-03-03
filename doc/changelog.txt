@@ -5,6 +5,7 @@ Note: For any bug or feature request please add a new issue on GitHub: https://g
 
 ver 2.0.0
 ---------
+- [feature] Added support for CancellationToken.
 - [feature] Renamed the IRequestHandler interfaces to IUseCase.
 - [feature] Removed the synchronous use case interfaces. Only async ones remain.
 - [bug-fix] Fixed the execution of requests when use case has response but is not needed.
