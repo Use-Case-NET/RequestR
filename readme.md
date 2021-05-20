@@ -13,9 +13,9 @@ internal class PresentProductsRequest
 The request handler must implement the `IRequestHandler` interface.
 
 ```csharp
-internal class PresentProductsRequestHandler : IRequestHandler<PresentProductsRequest, List<Product>>
+internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, List<Product>>
 {
-    public List<Product> Handle(PresentProductsRequest request)
+    public Task<List<Product>> Execute(PresentProductsRequest request, CancellationToken cancellationToken)
     {
         // Return the list of products.
     }
