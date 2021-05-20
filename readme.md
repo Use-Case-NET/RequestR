@@ -5,11 +5,11 @@
 The request and the response can be any C# classes.
 
 ```csharp
-internal class PresentProductsRequest
+public class PresentProductsRequest
 {
 }
 
-internal class PresentProductsResponse
+public class PresentProductsResponse
 {
 }
 ```
@@ -19,14 +19,14 @@ The use case must implement the `IUseCase` interface.
 ```csharp
 internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, PresentProductsResponse>
 {
-    public PresentProductsResponse Execute(PresentProductsRequest request, CancellationToken cancellationToken)
+    public Task<PresentProductsResponse> Execute(PresentProductsRequest request, CancellationToken cancellationToken)
     {
         // Return the list of products.
     }
 }
 ```
 
-Note: The response class is optional, it may be missing if the use case has nothing to return.
+> Note: The response class is optional, it may be missing if the use case has nothing to return.
 
 ## 2) Create the Request Bus and register the Use Case
 
