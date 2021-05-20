@@ -1,37 +1,43 @@
 # RequestR - Getting Started
 
-## 1) Create the Request and Request Handler classes
+## 1) Create the Request, Response and Use Case classes
 
-The request can be any C# class.
+The request and the response can be any C# classes.
 
 ```csharp
 internal class PresentProductsRequest
 {
 }
+
+internal class PresentProductsResponse
+{
+}
 ```
 
-The request handler must implement the `IRequestHandler` interface.
+The use case must implement the `IUseCase` interface.
 
 ```csharp
-internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, List<Product>>
+internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, PresentProductsResponse>
 {
-    public Task<List<Product>> Execute(PresentProductsRequest request, CancellationToken cancellationToken)
+    public PresentProductsResponse Execute(PresentProductsRequest request, CancellationToken cancellationToken)
     {
         // Return the list of products.
     }
 }
 ```
 
-## 2) Create the Request Bus and register the Request Handler
+Note: The response class is optional, it may be missing if the use case has nothing to return.
+
+## 2) Create the Request Bus and register the Use Case
 
 ```csharp
 RequestBus requestBus = new RequestBus();
-requestBus.RegisterHandler<PresentProductsRequestHandler>();
+requestBus.RegisterUseCase<PresentProductsUseCase>();
 ```
 
 ## 3) Send a new Request
 
 ```csharp
 PresentProductsRequest request = new PresentProductsRequest();
-List<Product> products = requestBus.Send<PresentProductsRequest, List<Product>>(request);
+PresentProductsResponse response = requestBus.Process<PresentProductsRequest, PresentProductsResponse>(request);
 ```
