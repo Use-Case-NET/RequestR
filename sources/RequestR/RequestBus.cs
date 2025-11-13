@@ -24,8 +24,8 @@ namespace DustInTheWind.RequestR;
 public class RequestBus
 {
     private readonly UseCaseFactoryBase useCaseFactory;
-    private readonly Dictionary<Type, Type> useCases = new Dictionary<Type, Type>();
-    private readonly Dictionary<Type, Type> validators = new Dictionary<Type, Type>();
+    private readonly Dictionary<Type, Type> useCases = [];
+    private readonly Dictionary<Type, Type> validators = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RequestBus"/> class
@@ -352,7 +352,7 @@ public class RequestBus
             return;
 
         Type validatorType = validators[requestType];
-        object validatorObject = useCaseFactory.Create(validatorType);
+        object validatorObject = useCaseFactory.CreateRequestValidator(validatorType);
 
         if (validatorObject is IRequestValidator<TRequest> validator)
             validator.Validate(request);
@@ -367,7 +367,7 @@ public class RequestBus
 
         Type useCaseType = useCases[requestType];
 
-        object useCaseObject = useCaseFactory.Create(useCaseType);
+        object useCaseObject = useCaseFactory.CreateUseCase(useCaseType);
 
         if (useCaseObject == null)
             throw new UseCaseInstantiateException(useCaseType, requestType);

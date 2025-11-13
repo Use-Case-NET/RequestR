@@ -28,12 +28,22 @@ public abstract class UseCaseFactoryBase
     /// </summary>
     /// <param name="type">The type of the use case to be created.</param>
     /// <returns>A new instance of the specified use case.</returns>
-    public object Create(Type type)
+    public object CreateUseCase(Type type)
     {
         bool isUseCase = type.IsUseCase();
 
         if (!isUseCase)
-            throw new RequestRException("The requested type is not a use case.");
+            throw new NotUseCaseException(type);
+
+        return CreateInternal(type);
+    }
+
+    public object CreateRequestValidator(Type type)
+    {
+        bool isRequestValidator = type.IsRequestValidator();
+        
+        if (!isRequestValidator)
+            throw new NotRequestValidatorException(type);
 
         return CreateInternal(type);
     }
