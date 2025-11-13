@@ -14,73 +14,70 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
-namespace DustInTheWind.RequestR
+namespace DustInTheWind.RequestR;
+
+/// <summary>
+/// Contains extension methods for the <see cref="RequestBus"/> type.
+/// </summary>
+public static class RequestBusExtensions
 {
     /// <summary>
-    /// Contains extension methods for the <see cref="RequestBus"/> type.
+    /// Searches all the assemblies from the current <see cref="AppDomain"/>
+    /// and registers all the use case and validator classes.
     /// </summary>
-    public static class RequestBusExtensions
+    /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
+    public static void RegisterAllUseCases(this RequestBus requestBus)
     {
-        /// <summary>
-        /// Searches all the assemblies from the current <see cref="AppDomain"/>
-        /// and registers all the use case and validator classes.
-        /// </summary>
-        /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
-        public static void RegisterAllUseCases(this RequestBus requestBus)
-        {
-            if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
+        if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
 
-            AppDomain appDomain = AppDomain.CurrentDomain;
+        AppDomain appDomain = AppDomain.CurrentDomain;
 
-            Assembly[] assemblies = appDomain.GetAssemblies();
+        Assembly[] assemblies = appDomain.GetAssemblies();
 
-            foreach (Assembly assembly in assemblies)
-                RegisterAllInternal(requestBus, assembly);
-        }
-
-        /// <summary>
-        /// Searches the specified assembly and registers all the use case and validator classes.
-        /// </summary>
-        /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
-        /// <param name="assembly">The assembly to be searched.</param>
-        public static void RegisterAllUseCases(this RequestBus requestBus, Assembly assembly)
-        {
-            if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
-            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
-
+        foreach (Assembly assembly in assemblies)
             RegisterAllInternal(requestBus, assembly);
-        }
+    }
 
-        /// <summary>
-        /// Searches the assembly containing the specified type and registers all the use case and validator classes.
-        /// </summary>
-        /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
-        /// <param name="type">A <see cref="Type"/> instance contained by the assembly to be searched.</param>
-        public static void RegisterAllUseCases(this RequestBus requestBus, Type type)
-        {
-            if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
-            if (type == null) throw new ArgumentNullException(nameof(type));
+    /// <summary>
+    /// Searches the specified assembly and registers all the use case and validator classes.
+    /// </summary>
+    /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
+    /// <param name="assembly">The assembly to be searched.</param>
+    public static void RegisterAllUseCases(this RequestBus requestBus, Assembly assembly)
+    {
+        if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
+        if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
-            Assembly assembly = type.Assembly;
+        RegisterAllInternal(requestBus, assembly);
+    }
 
-            RegisterAllInternal(requestBus, assembly);
-        }
+    /// <summary>
+    /// Searches the assembly containing the specified type and registers all the use case and validator classes.
+    /// </summary>
+    /// <param name="requestBus">The <see cref="RequestBus"/> instance where to register the use cases and validators</param>
+    /// <param name="type">A <see cref="Type"/> instance contained by the assembly to be searched.</param>
+    public static void RegisterAllUseCases(this RequestBus requestBus, Type type)
+    {
+        if (requestBus == null) throw new ArgumentNullException(nameof(requestBus));
+        if (type == null) throw new ArgumentNullException(nameof(type));
 
-        private static void RegisterAllInternal(RequestBus requestBus, Assembly assembly)
-        {
-            IEnumerable<Type> handlerTypes = assembly.GetAllUseCases();
+        Assembly assembly = type.Assembly;
 
-            foreach (Type handlerType in handlerTypes)
-                requestBus.RegisterUseCase(handlerType);
+        RegisterAllInternal(requestBus, assembly);
+    }
 
-            IEnumerable<Type> validatorTypes = assembly.GetAllRequestValidators();
+    private static void RegisterAllInternal(RequestBus requestBus, Assembly assembly)
+    {
+        IEnumerable<Type> handlerTypes = assembly.GetAllUseCases();
 
-            foreach (Type validatorType in validatorTypes)
-                requestBus.RegisterValidator(validatorType);
-        }
+        foreach (Type handlerType in handlerTypes)
+            requestBus.RegisterUseCase(handlerType);
+
+        IEnumerable<Type> validatorTypes = assembly.GetAllRequestValidators();
+
+        foreach (Type validatorType in validatorTypes)
+            requestBus.RegisterValidator(validatorType);
     }
 }

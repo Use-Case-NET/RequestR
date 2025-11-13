@@ -14,116 +14,112 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace DustInTheWind.RequestR.Tests.RequestBusTests
+namespace DustInTheWind.RequestR.Tests.RequestBusTests;
+
+public class UseCaseWithoutResponseTests
 {
-    public class UseCaseWithoutResponseTests
+    #region Request, Use Case, Use Case Factory
+
+    private class TestRequest
     {
-        #region Request, Use Case, Use Case Factory
+    }
 
-        private class TestRequest
+    private class TestUseCase : IUseCase<TestRequest>
+    {
+        public bool WasExecuted { get; private set; }
+
+        public async Task Execute(TestRequest request, CancellationToken cancellationToken)
         {
-        }
+            await Task.Delay(100, cancellationToken);
 
-        private class TestUseCase : IUseCase<TestRequest>
+            WasExecuted = true;
+        }
+    }
+
+    private class UseCaseFactoryMock : UseCaseFactoryBase
+    {
+        public IUseCase<TestRequest> UseCase { get; set; }
+
+        protected override object CreateInternal(Type type)
         {
-            public bool WasExecuted { get; private set; }
-
-            public async Task Execute(TestRequest request, CancellationToken cancellationToken)
-            {
-                await Task.Delay(100, cancellationToken);
-
-                WasExecuted = true;
-            }
+            return UseCase;
         }
+    }
 
-        private class UseCaseFactoryMock : UseCaseFactoryBase
+    #endregion
+
+    private readonly TestUseCase testUseCase;
+    private readonly RequestBus requestBus;
+
+    public UseCaseWithoutResponseTests()
+    {
+        testUseCase = new TestUseCase();
+        UseCaseFactoryMock useCaseFactory = new UseCaseFactoryMock
         {
-            public IUseCase<TestRequest> UseCase { get; set; }
+            UseCase = testUseCase
+        };
+        requestBus = new RequestBus(useCaseFactory);
 
-            protected override object CreateInternal(Type type)
-            {
-                return UseCase;
-            }
-        }
+        requestBus.RegisterUseCase<TestUseCase>();
+    }
 
-        #endregion
+    [Fact]
+    public void CallUseCaseSynchronouslyWithoutResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        requestBus.Process(testRequest);
 
-        private readonly TestUseCase testUseCase;
-        private readonly RequestBus requestBus;
+        Assert.True(testUseCase.WasExecuted);
+    }
 
-        public UseCaseWithoutResponseTests()
-        {
-            testUseCase = new TestUseCase();
-            UseCaseFactoryMock useCaseFactory = new UseCaseFactoryMock
-            {
-                UseCase = testUseCase
-            };
-            requestBus = new RequestBus(useCaseFactory);
+    [Fact]
+    public void CallUseCaseSynchronouslyAndGetValueTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        int response = requestBus.Process<TestRequest, int>(testRequest);
 
-            requestBus.RegisterUseCase<TestUseCase>();
-        }
+        Assert.True(testUseCase.WasExecuted);
+        Assert.Equal(0, response);
+    }
 
-        [Fact]
-        public void CallUseCaseSynchronouslyWithoutResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            requestBus.Process(testRequest);
+    [Fact]
+    public void CallUseCaseSynchronouslyAndGetReferenceTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        string response = requestBus.Process<TestRequest, string>(testRequest);
 
-            Assert.True(testUseCase.WasExecuted);
-        }
+        Assert.True(testUseCase.WasExecuted);
+        Assert.Null(response);
+    }
 
-        [Fact]
-        public void CallUseCaseSynchronouslyAndGetValueTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            int response = requestBus.Process<TestRequest, int>(testRequest);
+    [Fact]
+    public void CallUseCaseAsynchronouslyWithoutResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        requestBus.ProcessAsync(testRequest).Wait();
 
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Equal(0, response);
-        }
+        Assert.True(testUseCase.WasExecuted);
+    }
 
-        [Fact]
-        public void CallUseCaseSynchronouslyAndGetReferenceTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            string response = requestBus.Process<TestRequest, string>(testRequest);
+    [Fact]
+    public void CallUseCaseAsynchronouslyAndGetValueTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        int response = requestBus.ProcessAsync<TestRequest, int>(testRequest).Result;
 
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Null(response);
-        }
+        Assert.True(testUseCase.WasExecuted);
+        Assert.Equal(0, response);
+    }
 
-        [Fact]
-        public void CallUseCaseAsynchronouslyWithoutResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            requestBus.ProcessAsync(testRequest).Wait();
+    [Fact]
+    public void CallUseCaseAsynchronouslyAndGetReferenceTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
 
-            Assert.True(testUseCase.WasExecuted);
-        }
-
-        [Fact]
-        public void CallUseCaseAsynchronouslyAndGetValueTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            int response = requestBus.ProcessAsync<TestRequest, int>(testRequest).Result;
-
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Equal(0, response);
-        }
-
-        [Fact]
-        public void CallUseCaseAsynchronouslyAndGetReferenceTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
-
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Null(response);
-        }
+        Assert.True(testUseCase.WasExecuted);
+        Assert.Null(response);
     }
 }

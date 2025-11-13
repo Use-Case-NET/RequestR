@@ -14,42 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// Exception thrown when the application needs a <see cref="Type"/> object that represents a use case,
+/// but it receives one that does not implement the use case interfaces.
+/// </summary>
+[Serializable]
+public class TypeIsNotUseCaseException : Exception
 {
+    private const string DefaultMessageTemplate = "The type {0} is not a use case. It must implement one of the interfaces: {1}.";
+
     /// <summary>
-    /// Exception thrown when the application needs a <see cref="Type"/> object that represents a use case,
-    /// but it receives one that does not implement the use case interfaces.
+    /// Initializes a new instance of the <see cref="TypeIsNotUseCaseException"/> class
+    /// with the <see cref="Type"/> instance that is expected to represent a use case, but it doesn't.
     /// </summary>
-    [Serializable]
-    public class TypeIsNotUseCaseException : Exception
+    /// <param name="type">The <see cref="Type"/> instance that is expected to represent a use case, but it doesn't.</param>
+    public TypeIsNotUseCaseException(Type type)
+        : base(BuildMessage(type))
     {
-        private const string DefaultMessageTemplate = "The type {0} is not a use case. It must implement one of the interfaces: {1}.";
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeIsNotUseCaseException"/> class
-        /// with the <see cref="Type"/> instance that is expected to represent a use case, but it doesn't.
-        /// </summary>
-        /// <param name="type">The <see cref="Type"/> instance that is expected to represent a use case, but it doesn't.</param>
-        public TypeIsNotUseCaseException(Type type)
-            : base(BuildMessage(type))
-        {
-        }
+    private static string BuildMessage(Type type)
+    {
+        Type[] useCaseInterfaces = {
+            typeof(IUseCase<,>),
+            typeof(IUseCase<>)
+        };
 
-        private static string BuildMessage(Type type)
-        {
-            Type[] useCaseInterfaces = {
-                typeof(IUseCase<,>),
-                typeof(IUseCase<>)
-            };
+        IEnumerable<string> useCaseInterfacesNames = useCaseInterfaces
+            .Select(x => x.FullName);
 
-            IEnumerable<string> useCaseInterfacesNames = useCaseInterfaces
-                .Select(x => x.FullName);
-
-            return string.Format(DefaultMessageTemplate, type.FullName, string.Join<string>(", ", useCaseInterfacesNames));
-        }
+        return string.Format(DefaultMessageTemplate, type.FullName, string.Join<string>(", ", useCaseInterfacesNames));
     }
 }

@@ -14,79 +14,75 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Linq;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+internal static class TypeExtensions
 {
-    internal static class TypeExtensions
+    public static bool IsUseCase(this Type type)
     {
-        public static bool IsUseCase(this Type type)
-        {
-            if (!type.IsClass || type.IsAbstract)
-                return false;
+        if (!type.IsClass || type.IsAbstract)
+            return false;
 
-            return type.GetInterfaces().Any(IsUseCaseInterface);
-        }
+        return type.GetInterfaces().Any(IsUseCaseInterface);
+    }
 
-        public static Type GetUseCaseInterface(this Type type)
-        {
-            if (!type.IsClass || type.IsAbstract)
-                return null;
+    public static Type GetUseCaseInterface(this Type type)
+    {
+        if (!type.IsClass || type.IsAbstract)
+            return null;
 
-            return type.GetInterfaces().FirstOrDefault(IsUseCaseInterface);
-        }
+        return type.GetInterfaces().FirstOrDefault(IsUseCaseInterface);
+    }
 
-        private static bool IsUseCaseInterface(Type type)
-        {
-            if (!type.IsGenericType)
-                return false;
+    private static bool IsUseCaseInterface(Type type)
+    {
+        if (!type.IsGenericType)
+            return false;
 
-            Type genericTypeDefinition = type.GetGenericTypeDefinition();
+        Type genericTypeDefinition = type.GetGenericTypeDefinition();
 
-            return genericTypeDefinition == typeof(IUseCase<,>) ||
-                   genericTypeDefinition == typeof(IUseCase<>);
-        }
+        return genericTypeDefinition == typeof(IUseCase<,>) ||
+               genericTypeDefinition == typeof(IUseCase<>);
+    }
 
-        public static bool IsRequestValidator(this Type type)
-        {
-            if (!type.IsClass || type.IsAbstract)
-                return false;
+    public static bool IsRequestValidator(this Type type)
+    {
+        if (!type.IsClass || type.IsAbstract)
+            return false;
 
-            return type.GetInterfaces().Any(IsRequestValidatorInterface);
-        }
+        return type.GetInterfaces().Any(IsRequestValidatorInterface);
+    }
 
-        public static Type GetRequestValidatorInterface(this Type type)
-        {
-            if (!type.IsClass || type.IsAbstract)
-                return null;
+    public static Type GetRequestValidatorInterface(this Type type)
+    {
+        if (!type.IsClass || type.IsAbstract)
+            return null;
 
-            return type.GetInterfaces().FirstOrDefault(IsRequestValidatorInterface);
-        }
+        return type.GetInterfaces().FirstOrDefault(IsRequestValidatorInterface);
+    }
 
-        private static bool IsRequestValidatorInterface(Type type)
-        {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IRequestValidator<>);
-        }
+    private static bool IsRequestValidatorInterface(Type type)
+    {
+        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IRequestValidator<>);
+    }
 
-        public static bool IsUseCaseOrRequestValidator(this Type type)
-        {
-            if (!type.IsClass || type.IsAbstract)
-                return false;
+    public static bool IsUseCaseOrRequestValidator(this Type type)
+    {
+        if (!type.IsClass || type.IsAbstract)
+            return false;
 
-            return type.GetInterfaces().Any(IsUseCaseOrRequestValidatorInterface);
-        }
+        return type.GetInterfaces().Any(IsUseCaseOrRequestValidatorInterface);
+    }
 
-        private static bool IsUseCaseOrRequestValidatorInterface(Type type)
-        {
-            if (!type.IsGenericType)
-                return false;
+    private static bool IsUseCaseOrRequestValidatorInterface(Type type)
+    {
+        if (!type.IsGenericType)
+            return false;
 
-            Type genericTypeDefinition = type.GetGenericTypeDefinition();
+        Type genericTypeDefinition = type.GetGenericTypeDefinition();
 
-            return genericTypeDefinition == typeof(IUseCase<,>) ||
-                   genericTypeDefinition == typeof(IUseCase<>) ||
-                   genericTypeDefinition == typeof(IRequestValidator<>);
-        }
+        return genericTypeDefinition == typeof(IUseCase<,>) ||
+               genericTypeDefinition == typeof(IUseCase<>) ||
+               genericTypeDefinition == typeof(IRequestValidator<>);
     }
 }

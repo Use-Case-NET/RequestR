@@ -14,19 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace DustInTheWind.RequestR
+namespace DustInTheWind.RequestR;
+
+/// <summary>
+/// Provides validation for the use case request of type <typeparamref name="TRequest"/>.
+/// </summary>
+/// <typeparam name="TRequest">The type of the request that is validated.</typeparam>
+public interface IRequestValidator<in TRequest>
 {
     /// <summary>
-    /// Provides validation for the use case request of type <typeparamref name="TRequest"/>.
+    /// Performs the validation of the use case request.
+    /// If validation fails, an exception is thrown.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request that is validated.</typeparam>
-    public interface IRequestValidator<in TRequest>
-    {
-        /// <summary>
-        /// Performs the validation of the use case request.
-        /// If validation fails, an exception is thrown.
-        /// </summary>
-        /// <param name="request">The request instance that is being validated.</param>
-        void Validate(TRequest request);
-    }
+    /// <param name="request">The request instance that is being validated.</param>
+    void Validate(TRequest request);
 }

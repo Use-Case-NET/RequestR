@@ -14,120 +14,116 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace DustInTheWind.RequestR.Tests.RequestBusTests
+namespace DustInTheWind.RequestR.Tests.RequestBusTests;
+
+public class UseCaseWithResponseTests
 {
-    public class UseCaseWithResponseTests
+    #region Request, Use Case, Use Case Factory
+
+    private class TestRequest
     {
-        #region Request, Use Case, Use Case Factory
+    }
 
-        private class TestRequest
+    private class TestUseCase : IUseCase<TestRequest, string>
+    {
+        public bool WasExecuted { get; private set; }
+
+        public async Task<string> Execute(TestRequest request, CancellationToken cancellationToken)
         {
-        }
+            await Task.Delay(100, cancellationToken);
 
-        private class TestUseCase : IUseCase<TestRequest, string>
+            WasExecuted = true;
+
+            return "response";
+        }
+    }
+
+    private class UseCaseFactoryMock : UseCaseFactoryBase
+    {
+        public IUseCase<TestRequest, string> UseCase { get; set; }
+
+        protected override object CreateInternal(Type type)
         {
-            public bool WasExecuted { get; private set; }
-
-            public async Task<string> Execute(TestRequest request, CancellationToken cancellationToken)
-            {
-                await Task.Delay(100, cancellationToken);
-
-                WasExecuted = true;
-
-                return "response";
-            }
+            return UseCase;
         }
+    }
 
-        private class UseCaseFactoryMock : UseCaseFactoryBase
+    #endregion
+
+    private readonly TestUseCase testUseCase;
+    private readonly RequestBus requestBus;
+
+    public UseCaseWithResponseTests()
+    {
+        testUseCase = new TestUseCase();
+        UseCaseFactoryMock useCaseFactory = new UseCaseFactoryMock
         {
-            public IUseCase<TestRequest, string> UseCase { get; set; }
+            UseCase = testUseCase
+        };
+        requestBus = new RequestBus(useCaseFactory);
 
-            protected override object CreateInternal(Type type)
-            {
-                return UseCase;
-            }
-        }
+        requestBus.RegisterUseCase<TestUseCase>();
+    }
 
-        #endregion
+    [Fact]
+    public void CallUseCaseSynchronouslyWithoutResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        requestBus.Process(testRequest);
 
-        private readonly TestUseCase testUseCase;
-        private readonly RequestBus requestBus;
+        Assert.True(testUseCase.WasExecuted);
+    }
 
-        public UseCaseWithResponseTests()
+    [Fact]
+    public void CallUseCaseSynchronouslyAndGetIncorrectTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+
+        Assert.Throws<ResponseCastException>(() =>
         {
-            testUseCase = new TestUseCase();
-            UseCaseFactoryMock useCaseFactory = new UseCaseFactoryMock
-            {
-                UseCase = testUseCase
-            };
-            requestBus = new RequestBus(useCaseFactory);
+            requestBus.Process<TestRequest, int>(testRequest);
+        });
+    }
 
-            requestBus.RegisterUseCase<TestUseCase>();
-        }
+    [Fact]
+    public void CallUseCaseSynchronouslyAndGetCorrectTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        string response = requestBus.Process<TestRequest, string>(testRequest);
 
-        [Fact]
-        public void CallUseCaseSynchronouslyWithoutResponse()
+        Assert.True(testUseCase.WasExecuted);
+        Assert.Equal("response", response);
+    }
+
+    [Fact]
+    public void CallUseCaseAsynchronouslyWithoutResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        requestBus.ProcessAsync(testRequest).Wait();
+
+        Assert.True(testUseCase.WasExecuted);
+    }
+
+    [Fact]
+    public void CallUseCaseAsynchronouslyAndGetIncorrectTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+
+        Assert.ThrowsAsync<ResponseCastException>(async () =>
         {
-            TestRequest testRequest = new TestRequest();
-            requestBus.Process(testRequest);
+            await requestBus.ProcessAsync<TestRequest, int>(testRequest);
+        });
+    }
 
-            Assert.True(testUseCase.WasExecuted);
-        }
+    [Fact]
+    public void CallUseCaseAsynchronouslyAndGetCorrectTypeResponse()
+    {
+        TestRequest testRequest = new TestRequest();
+        string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
 
-        [Fact]
-        public void CallUseCaseSynchronouslyAndGetIncorrectTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-
-            Assert.Throws<ResponseCastException>(() =>
-            {
-                requestBus.Process<TestRequest, int>(testRequest);
-            });
-        }
-
-        [Fact]
-        public void CallUseCaseSynchronouslyAndGetCorrectTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            string response = requestBus.Process<TestRequest, string>(testRequest);
-
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Equal("response", response);
-        }
-
-        [Fact]
-        public void CallUseCaseAsynchronouslyWithoutResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            requestBus.ProcessAsync(testRequest).Wait();
-
-            Assert.True(testUseCase.WasExecuted);
-        }
-
-        [Fact]
-        public void CallUseCaseAsynchronouslyAndGetIncorrectTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-
-            Assert.ThrowsAsync<ResponseCastException>(async () =>
-            {
-                await requestBus.ProcessAsync<TestRequest, int>(testRequest);
-            });
-        }
-
-        [Fact]
-        public void CallUseCaseAsynchronouslyAndGetCorrectTypeResponse()
-        {
-            TestRequest testRequest = new TestRequest();
-            string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
-
-            Assert.True(testUseCase.WasExecuted);
-            Assert.Equal("response", response);
-        }
+        Assert.True(testUseCase.WasExecuted);
+        Assert.Equal("response", response);
     }
 }

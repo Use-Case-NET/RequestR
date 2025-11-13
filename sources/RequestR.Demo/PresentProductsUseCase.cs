@@ -14,39 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+namespace DustInTheWind.RequestR.Demo;
 
-namespace DustInTheWind.RequestR.Demo
+internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, List<Product>>
 {
-    internal class PresentProductsUseCase : IUseCase<PresentProductsRequest, List<Product>>
+    public Task<List<Product>> Execute(PresentProductsRequest request, CancellationToken cancellationToken)
     {
-        public Task<List<Product>> Execute(PresentProductsRequest request, CancellationToken cancellationToken)
-        {
-            List<Product> products = new List<Product>
+        List<Product> products =
+        [
+            new Product
             {
-                new Product
-                {
-                    Name = "Chocolate",
-                    Price = 10,
-                    Quantity = 15
-                },
-                new Product
-                {
-                    Name = "Potato Chips",
-                    Price = 2,
-                    Quantity = 7
-                },
-                new Product
-                {
-                    Name = "Water",
-                    Price = 5,
-                    Quantity = 10
-                }
-            };
+                Name = "Chocolate",
+                Price = 10,
+                Quantity = 15
+            },
+            new Product
+            {
+                Name = "Potato Chips",
+                Price = 2,
+                Quantity = 7
+            },
+            new Product
+            {
+                Name = "Water",
+                Price = 5,
+                Quantity = 10
+            }
+        ];
 
-            return Task.FromResult(products);
-        }
+        return Task.FromResult(products);
     }
 }

@@ -14,24 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Threading;
-using System.Threading.Tasks;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// Implements a use case that can handle asynchronously a <typeparamref name="TRequest"/> object
+/// and returns a <typeparamref name="TResponse"/> object as response.
+/// </summary>
+/// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
+/// <typeparam name="TResponse">The type of the response that is returned by this use case.</typeparam>
+public interface IUseCase<in TRequest, TResponse>
 {
     /// <summary>
-    /// Implements a use case that can handle asynchronously a <typeparamref name="TRequest"/> object
-    /// and returns a <typeparamref name="TResponse"/> object as response.
+    /// Asynchronously executes the use case for the specified input data and returns the response.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
-    /// <typeparam name="TResponse">The type of the response that is returned by this use case.</typeparam>
-    public interface IUseCase<in TRequest, TResponse>
-    {
-        /// <summary>
-        /// Asynchronously executes the use case for the specified input data and returns the response.
-        /// </summary>
-        /// <param name="request">The object containing the input data for the use case.</param>
-        /// <returns>The <see cref="Task"/> object that represents the asynchronous use case execution. The <see cref="Task{T}.Result"/> contains the use case's response.</returns>
-        Task<TResponse> Execute(TRequest request, CancellationToken cancellationToken);
-    }
+    /// <param name="request">The object containing the input data for the use case.</param>
+    /// <returns>The <see cref="Task"/> object that represents the asynchronous use case execution. The <see cref="Task{T}.Result"/> contains the use case's response.</returns>
+    Task<TResponse> Execute(TRequest request, CancellationToken cancellationToken);
 }

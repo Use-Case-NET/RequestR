@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace DustInTheWind.RequestR.Demo
+namespace DustInTheWind.RequestR.Demo;
+
+internal class Product
 {
-    internal class Product
-    {
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public uint Quantity { get; set; }
+    public uint Quantity { get; set; }
 
-        public decimal Price { get; set; }
-    }
+    public decimal Price { get; set; }
 }

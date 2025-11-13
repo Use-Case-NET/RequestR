@@ -14,24 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// This exception is thrown by <see cref="RequestBus"/> when no use case was registered
+/// for the specified request.
+/// </summary>
+public class UseCaseNotFoundException : RequestRException
 {
-    /// <summary>
-    /// This exception is thrown by <see cref="RequestBus"/> when no use case was registered
-    /// for the specified request.
-    /// </summary>
-    public class UseCaseNotFoundException : RequestRException
-    {
-        private const string DefaultMessage = "No use case is registered for the specified request.";
+    private const string DefaultMessage = "No use case is registered for the specified request.";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UseCaseNotFoundException"/> class.
-        /// </summary>
-        public UseCaseNotFoundException()
-            : base(DefaultMessage)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UseCaseNotFoundException"/> class.
+    /// </summary>
+    public UseCaseNotFoundException()
+        : base(DefaultMessage)
+    {
     }
 }

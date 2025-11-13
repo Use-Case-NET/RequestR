@@ -14,26 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// This exception is thrown by the <see cref="RequestBus"/> when a second validator is registered
+/// for the same type of request.
+/// </summary>
+public class ValidatorAlreadyRegisteredException : RequestRException
 {
-    /// <summary>
-    /// This exception is thrown by the <see cref="RequestBus"/> when a second validator is registered
-    /// for the same type of request.
-    /// </summary>
-    public class ValidatorAlreadyRegisteredException : RequestRException
-    {
-        private const string DefaultMessage = "Another validator is already registered for this request. Request type {0}.";
+    private const string DefaultMessage = "Another validator is already registered for this request. Request type {0}.";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ValidatorAlreadyRegisteredException"/> class
-        /// with the request type for which the validator is attempted to be registered.
-        /// </summary>
-        /// <param name="requestType">The type of the request for which the second validator was attempted to be registered.</param>
-        public ValidatorAlreadyRegisteredException(Type requestType)
-            : base(string.Format(DefaultMessage, requestType.FullName))
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ValidatorAlreadyRegisteredException"/> class
+    /// with the request type for which the validator is attempted to be registered.
+    /// </summary>
+    /// <param name="requestType">The type of the request for which the second validator was attempted to be registered.</param>
+    public ValidatorAlreadyRegisteredException(Type requestType)
+        : base(string.Format(DefaultMessage, requestType.FullName))
+    {
     }
 }

@@ -14,56 +14,54 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.Runtime.Serialization;
 
-namespace DustInTheWind.RequestR
+namespace DustInTheWind.RequestR;
+
+/// <summary>
+/// The base exception thrown by the RequestR framework.
+/// </summary>
+[Serializable]
+public class RequestRException : Exception
 {
+    private const string DefaultMessage = "An unknown error has occured in RequestR.";
+
     /// <summary>
-    /// The base exception thrown by the RequestR framework.
+    /// Initializes a new instance of the <see cref="RequestRException"/>
+    /// with a default error message.
     /// </summary>
-    [Serializable]
-    public class RequestRException : Exception
+    public RequestRException()
+        : base(DefaultMessage)
     {
-        private const string DefaultMessage = "An unknown error has occured in RequestR.";
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequestRException"/>
-        /// with a default error message.
-        /// </summary>
-        public RequestRException()
-            : base(DefaultMessage)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequestRException"/>
+    /// with a custom error message.
+    /// </summary>
+    /// <param name="message">The message that described the encountered error.</param>
+    public RequestRException(string message)
+        : base(message)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequestRException"/>
-        /// with a custom error message.
-        /// </summary>
-        /// <param name="message">The message that described the encountered error.</param>
-        public RequestRException(string message)
-            : base(message)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequestRException"/>
+    /// with a custom error message an an inner exception that is the cause of this exception.
+    /// </summary>
+    /// <param name="message">The message that described the current exception.</param>
+    /// <param name="inner">The exception that caused the current exception.</param>
+    public RequestRException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequestRException"/>
-        /// with a custom error message an an inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The message that described the current exception.</param>
-        /// <param name="inner">The exception that caused the current exception.</param>
-        public RequestRException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequestRException"/>
-        /// with serialized data.
-        /// </summary>
-        protected RequestRException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequestRException"/>
+    /// with serialized data.
+    /// </summary>
+    protected RequestRException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

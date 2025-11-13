@@ -14,37 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// A factory class that creates instances of use cases.
+/// </summary>
+public abstract class UseCaseFactoryBase
 {
     /// <summary>
-    /// A factory class that creates instances of use cases.
+    /// Creates a new instance of the specified use case type.
+    /// The actual creation of the object is delegated to the inheritor class.
+    /// See the <see cref="CreateInternal"/> method.
     /// </summary>
-    public abstract class UseCaseFactoryBase
+    /// <param name="type">The type of the use case to be created.</param>
+    /// <returns>A new instance of the specified use case.</returns>
+    public object Create(Type type)
     {
-        /// <summary>
-        /// Creates a new instance of the specified use case type.
-        /// The actual creation of the object is delegated to the inheritor class.
-        /// See the <see cref="CreateInternal"/> method.
-        /// </summary>
-        /// <param name="type">The type of the use case to be created.</param>
-        /// <returns>A new instance of the specified use case.</returns>
-        public object Create(Type type)
-        {
-            bool isUseCase = type.IsUseCase();
+        bool isUseCase = type.IsUseCase();
 
-            if (!isUseCase)
-                throw new RequestRException("The requested type is not a use case.");
+        if (!isUseCase)
+            throw new RequestRException("The requested type is not a use case.");
 
-            return CreateInternal(type);
-        }
-
-        /// <summary>
-        /// When implemented by an inheritor, it creates a new instance of the specified use case.
-        /// </summary>
-        /// <param name="type">The type of the use case to be created.</param>
-        /// <returns>A new instance of the specified use case.</returns>
-        protected abstract object CreateInternal(Type type);
+        return CreateInternal(type);
     }
+
+    /// <summary>
+    /// When implemented by an inheritor, it creates a new instance of the specified use case.
+    /// </summary>
+    /// <param name="type">The type of the use case to be created.</param>
+    /// <returns>A new instance of the specified use case.</returns>
+    protected abstract object CreateInternal(Type type);
 }

@@ -14,23 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Threading;
-using System.Threading.Tasks;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// Implements a use case that can handle asynchronously a <typeparamref name="TRequest"/> object
+/// and returns nothing.
+/// </summary>
+/// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
+public interface IUseCase<in TRequest>
 {
     /// <summary>
-    /// Implements a use case that can handle asynchronously a <typeparamref name="TRequest"/> object
-    /// and returns nothing.
+    /// Asynchronously executes the use case for the specified input data.
     /// </summary>
-    /// <typeparam name="TRequest">The type of the request that can be handled by this use case.</typeparam>
-    public interface IUseCase<in TRequest>
-    {
-        /// <summary>
-        /// Asynchronously executes the use case for the specified input data.
-        /// </summary>
-        /// <param name="request">The object containing the input data for the use case.</param>
-        /// <returns>The <see cref="Task"/> object that represents the asynchronous use case execution.</returns>
-        Task Execute(TRequest request, CancellationToken cancellationToken);
-    }
+    /// <param name="request">The object containing the input data for the use case.</param>
+    /// <returns>The <see cref="Task"/> object that represents the asynchronous use case execution.</returns>
+    Task Execute(TRequest request, CancellationToken cancellationToken);
 }

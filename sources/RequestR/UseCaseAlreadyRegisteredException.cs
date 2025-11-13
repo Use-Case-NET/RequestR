@@ -14,26 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// This exception is thrown by the <see cref="RequestBus"/> when a second use case is registered
+/// for the same type of request.
+/// </summary>
+public class UseCaseAlreadyRegisteredException : RequestRException
 {
-    /// <summary>
-    /// This exception is thrown by the <see cref="RequestBus"/> when a second use case is registered
-    /// for the same type of request.
-    /// </summary>
-    public class UseCaseAlreadyRegisteredException : RequestRException
-    {
-        private const string DefaultMessage = "Another use case is already registered for this request. Request type {0}.";
+    private const string DefaultMessage = "Another use case is already registered for this request. Request type {0}.";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UseCaseAlreadyRegisteredException"/> class
-        /// with the request type for which the use case is attempted to be registered.
-        /// </summary>
-        /// <param name="requestType">The type of the request for which the second use case was attempted to be registered.</param>
-        public UseCaseAlreadyRegisteredException(Type requestType)
-            : base(string.Format(DefaultMessage, requestType.FullName))
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UseCaseAlreadyRegisteredException"/> class
+    /// with the request type for which the use case is attempted to be registered.
+    /// </summary>
+    /// <param name="requestType">The type of the request for which the second use case was attempted to be registered.</param>
+    public UseCaseAlreadyRegisteredException(Type requestType)
+        : base(string.Format(DefaultMessage, requestType.FullName))
+    {
     }
 }

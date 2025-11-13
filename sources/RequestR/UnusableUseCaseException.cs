@@ -14,32 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+namespace DustInTheWind.RequestR;
 
-namespace DustInTheWind.RequestR
+/// <summary>
+/// Exception thrown when the use case found in the registered use cases list for the specified request
+/// cannot be used to handle the request.
+/// </summary>
+public class UnusableUseCaseException : RequestRException
 {
     /// <summary>
-    /// Exception thrown when the use case found in the registered use cases list for the specified request
-    /// cannot be used to handle the request.
+    /// Initializes a new instance of the <see cref="UnusableUseCaseException"/> class.
     /// </summary>
-    public class UnusableUseCaseException : RequestRException
+    public UnusableUseCaseException(Type useCaseType)
+        : base($"The use case found cannot be used for the specified request. Use case type {useCaseType.FullName}.")
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnusableUseCaseException"/> class.
-        /// </summary>
-        public UnusableUseCaseException(Type useCaseType)
-            : base($"The use case found cannot be used for the specified request. Use case type {useCaseType.FullName}.")
-        {
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnusableUseCaseException"/> class.
-        /// </summary>
-        /// <param name="useCaseType">The type of the use case that cannot be used.</param>
-        /// <param name="requestType">The type of the request for which the use case cannot be used.</param>
-        public UnusableUseCaseException(Type useCaseType, Type requestType)
-            : base($"The use case found cannot be used for the specified request. Use case type {useCaseType.FullName}; Request type: {requestType.FullName}")
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UnusableUseCaseException"/> class.
+    /// </summary>
+    /// <param name="useCaseType">The type of the use case that cannot be used.</param>
+    /// <param name="requestType">The type of the request for which the use case cannot be used.</param>
+    public UnusableUseCaseException(Type useCaseType, Type requestType)
+        : base($"The use case found cannot be used for the specified request. Use case type {useCaseType.FullName}; Request type: {requestType.FullName}")
+    {
     }
 }

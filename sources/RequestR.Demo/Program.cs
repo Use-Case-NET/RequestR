@@ -14,32 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
+namespace DustInTheWind.RequestR.Demo;
 
-namespace DustInTheWind.RequestR.Demo
+internal static class Program
 {
-    internal class Program
+    private static void Main(string[] args)
     {
-        private static void Main(string[] args)
+        // Setup request bus
+        RequestBus requestBus = new();
+        requestBus.RegisterUseCase<PresentProductsUseCase>();
+
+        // Send request
+        PresentProductsRequest request = new();
+        requestBus.Process(request);
+        List<Product> products = requestBus.Process<PresentProductsRequest, List<Product>>(request);
+
+        // Display response
+        foreach (Product product in products)
         {
-            // Setup request bus
-            RequestBus requestBus = new RequestBus();
-            requestBus.RegisterUseCase<PresentProductsUseCase>();
-
-            // Send request
-            PresentProductsRequest request = new PresentProductsRequest();
-            requestBus.Process(request);
-            List<Product> products = requestBus.Process<PresentProductsRequest, List<Product>>(request);
-
-            // Display response
-            foreach (Product product in products)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Product: " + product.Name);
-                Console.WriteLine("Price: " + product.Price);
-                Console.WriteLine("Quantity: " + product.Quantity);
-            }
+            Console.WriteLine();
+            Console.WriteLine("Product: " + product.Name);
+            Console.WriteLine("Price: " + product.Price);
+            Console.WriteLine("Quantity: " + product.Quantity);
         }
     }
 }
