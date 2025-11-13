@@ -1,0 +1,18 @@
+<Project>
+
+	<PropertyGroup>
+		<Product>RequestR</Product>
+		<Copyright>Copyright © 2021-2025 Dust in the Wind</Copyright>
+
+		<Version>2.0.1</Version>
+		<Authors>Alexandru Iuga</Authors>
+		<Company>Dust in the Wind</Company>
+
+		<RepositoryUrl>https://github.com/lastunicorn/RequestR</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+</Project>

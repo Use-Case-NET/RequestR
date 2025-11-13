@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestR", "RequestR\RequestR.csproj", "{E696AE7B-DB35-47F9-AF2C-D495E7BC5EDF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestR.Demo", "RequestR.Demo\RequestR.Demo.csproj", "{1726F483-6FC1-46F9-ABBB-0BD0910109E0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestR.Tests", "RequestR.Tests\RequestR.Tests.csproj", "{A6915313-5AF5-4276-A690-FE9DFE12554E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{CB558DD9-B6FE-4EE9-9BB9-99EB12FFEC7B}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
