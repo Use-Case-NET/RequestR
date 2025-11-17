@@ -126,6 +126,7 @@ public class RequestBus
     /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
     /// <param name="request">The request object for which to execute the use case.</param>
     /// <returns>The response object that is returned to the caller.</returns>
+    [Obsolete("Use the Send method instead."))]
     public TResponse Process<TRequest, TResponse>(TRequest request)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
@@ -196,6 +197,7 @@ public class RequestBus
     /// </summary>
     /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
     /// <param name="request">The request object for which to execute the use case.</param>
+    [Obsolete("Use the Send method instead."))]
     public void Process<TRequest>(TRequest request)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
@@ -269,6 +271,7 @@ public class RequestBus
     /// The <see cref="Task"/> object representing the asynchronous execution.
     /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
     /// </returns>
+    [Obsolete("Use the Send method instead."))]
     public Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request)
     {
         return SendAsync<TRequest, TResponse>(request, CancellationToken.None);
@@ -301,6 +304,7 @@ public class RequestBus
     /// The <see cref="Task"/> object representing the asynchronous execution.
     /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
     /// </returns>
+    [Obsolete("Use the Send method instead."))]
     public async Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
@@ -369,6 +373,7 @@ public class RequestBus
     /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
     /// <param name="request">The request object for which to execute the use case.</param>
     /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
+    [Obsolete("Use the Send method instead."))]
     public Task ProcessAsync<TRequest>(TRequest request)
     {
         return SendAsync(request, CancellationToken.None);
@@ -393,6 +398,7 @@ public class RequestBus
     /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
     /// <param name="request">The request object for which to execute the use case.</param>
     /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
+    [Obsolete("Use the Send method instead."))]
     public async Task ProcessAsync<TRequest>(TRequest request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
@@ -413,7 +419,7 @@ public class RequestBus
                 MethodInfo executeMethodInfo = useCaseInterfaceType.GetMethods()
                     .Single(x => IsExecuteMethod(x, typeof(TRequest)));
 
-                await (Task)executeMethodInfo.Invoke(useCaseObject, new object[] { request, cancellationToken });
+                await (Task)executeMethodInfo.Invoke(useCaseObject, [request, cancellationToken]);
             }
             else
             {
