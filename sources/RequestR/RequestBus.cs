@@ -113,6 +113,19 @@ public class RequestBus
     /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
     /// <param name="request">The request object for which to execute the use case.</param>
     /// <returns>The response object that is returned to the caller.</returns>
+    public TResponse Send<TRequest, TResponse>(TRequest request)
+    {
+        return Process<TRequest, TResponse>(request);
+    }
+
+    /// <summary>
+    /// Searches a use case that can handle the specified request, executes it and returns the response.
+    /// If a validator exists for the request, it is also executed before the use case.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+    /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+    /// <param name="request">The request object for which to execute the use case.</param>
+    /// <returns>The response object that is returned to the caller.</returns>
     public TResponse Process<TRequest, TResponse>(TRequest request)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
@@ -164,6 +177,17 @@ public class RequestBus
                     throw new UnusableUseCaseException(useCaseObject.GetType(), typeof(TRequest));
                 }
         }
+    }
+
+    /// <summary>
+    /// Searches a use case that can handle the specified request and executes it.
+    /// If a validator exists for the request, it is also executed before the use case.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+    /// <param name="request">The request object for which to execute the use case.</param>
+    public void Send<TRequest>(TRequest request)
+    {
+        Process(request);
     }
 
     /// <summary>
@@ -229,9 +253,41 @@ public class RequestBus
     /// The <see cref="Task"/> object representing the asynchronous execution.
     /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
     /// </returns>
+    public Task<TResponse> SendAsync<TRequest, TResponse>(TRequest request)
+    {
+        return SendAsync<TRequest, TResponse>(request, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Searches a use case that can handle the specified request, executes it asynchronously and returns the response.
+    /// If a validator exists for the request, it is also executed before the use case.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+    /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+    /// <param name="request">The request object for which to execute the use case.</param>
+    /// <returns>
+    /// The <see cref="Task"/> object representing the asynchronous execution.
+    /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
+    /// </returns>
     public Task<TResponse> ProcessAsync<TRequest, TResponse>(TRequest request)
     {
-        return ProcessAsync<TRequest, TResponse>(request, CancellationToken.None);
+        return SendAsync<TRequest, TResponse>(request, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Searches a use case that can handle the specified request, executes it asynchronously and returns the response.
+    /// If a validator exists for the request, it is also executed before the use case.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+    /// <typeparam name="TResponse">The type of the response object that is returned to the caller.</typeparam>
+    /// <param name="request">The request object for which to execute the use case.</param>
+    /// <returns>
+    /// The <see cref="Task"/> object representing the asynchronous execution.
+    /// At the end of the execution, the <see cref="Task{T}.Result"/> will contain the response object of the use case.
+    /// </returns>
+    public Task<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken)
+    {
+        return ProcessAsync<TRequest, TResponse>(request, cancellationToken);
     }
 
     /// <summary>
@@ -301,9 +357,33 @@ public class RequestBus
     /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
     /// <param name="request">The request object for which to execute the use case.</param>
     /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
+    public Task SendAsync<TRequest>(TRequest request)
+    {
+        return SendAsync(request, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Searches a use case that can handle the specified request and executes it asynchronously.
+    /// If a validator exists for the request, it is also executed before the use case.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+    /// <param name="request">The request object for which to execute the use case.</param>
+    /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
     public Task ProcessAsync<TRequest>(TRequest request)
     {
-        return ProcessAsync(request, CancellationToken.None);
+        return SendAsync(request, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Searches a use case that can handle the specified request and executes it asynchronously.
+    /// If a validator exists for the request, it is also executed before the use case.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request object for which to execute the use case.</typeparam>
+    /// <param name="request">The request object for which to execute the use case.</param>
+    /// <returns>The <see cref="Task"/> object representing the asynchronous execution.</returns>
+    public Task SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken)
+    {
+        return ProcessAsync<TRequest>(request, cancellationToken);
     }
 
     /// <summary>

@@ -26,8 +26,8 @@ internal static class Program
 
         // Send request
         PresentProductsRequest request = new();
-        requestBus.Process(request);
-        List<Product> products = requestBus.Process<PresentProductsRequest, List<Product>>(request);
+        requestBus.Send(request);
+        List<Product> products = requestBus.Send<PresentProductsRequest, List<Product>>(request);
 
         // Display response
         foreach (Product product in products)

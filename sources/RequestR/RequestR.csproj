@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<AssemblyName>DustInTheWind.RequestR</AssemblyName>
-		<RootNamespace>DustInTheWind.RequestR</RootNamespace>
+		<AssemblyName>DustInTheWind.$(MSBuildProjectName)</AssemblyName>
+		<RootNamespace>DustInTheWind.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 
 		<Description>A lightweight library to be used in the Business Layer for processing requests coming from the Presentation Layer.</Description>
 

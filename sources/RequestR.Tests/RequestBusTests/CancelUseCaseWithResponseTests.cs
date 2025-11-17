@@ -68,7 +68,7 @@ public class CancelUseCaseWithResponseTests
 
         await Assert.ThrowsAsync<TaskCanceledException>(async () =>
         {
-            await requestBus.ProcessAsync(testRequest, cancellationToken);
+            await requestBus.SendAsync(testRequest, cancellationToken);
         });
 
         Assert.InRange(testUseCase.FinishedTime, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(150));
@@ -83,7 +83,7 @@ public class CancelUseCaseWithResponseTests
 
         await Assert.ThrowsAsync<TaskCanceledException>(async () =>
         {
-            int response = await requestBus.ProcessAsync<TestRequest, int>(testRequest, cancellationToken);
+            int response = await requestBus.SendAsync<TestRequest, int>(testRequest, cancellationToken);
         });
 
         Assert.InRange(testUseCase.FinishedTime, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(150));
@@ -98,7 +98,7 @@ public class CancelUseCaseWithResponseTests
 
         await Assert.ThrowsAsync<TaskCanceledException>(async () =>
         {
-            string response = await requestBus.ProcessAsync<TestRequest, string>(testRequest, cancellationToken);
+            string response = await requestBus.SendAsync<TestRequest, string>(testRequest, cancellationToken);
         });
 
         Assert.InRange(testUseCase.FinishedTime, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(150));

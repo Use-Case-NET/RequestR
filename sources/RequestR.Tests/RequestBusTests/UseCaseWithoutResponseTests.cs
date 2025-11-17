@@ -69,7 +69,7 @@ public class UseCaseWithoutResponseTests
     public void CallUseCaseSynchronouslyWithoutResponse()
     {
         TestRequest testRequest = new TestRequest();
-        requestBus.Process(testRequest);
+        requestBus.Send(testRequest);
 
         Assert.True(testUseCase.WasExecuted);
     }
@@ -78,7 +78,7 @@ public class UseCaseWithoutResponseTests
     public void CallUseCaseSynchronouslyAndGetValueTypeResponse()
     {
         TestRequest testRequest = new TestRequest();
-        int response = requestBus.Process<TestRequest, int>(testRequest);
+        int response = requestBus.Send<TestRequest, int>(testRequest);
 
         Assert.True(testUseCase.WasExecuted);
         Assert.Equal(0, response);
@@ -88,7 +88,7 @@ public class UseCaseWithoutResponseTests
     public void CallUseCaseSynchronouslyAndGetReferenceTypeResponse()
     {
         TestRequest testRequest = new TestRequest();
-        string response = requestBus.Process<TestRequest, string>(testRequest);
+        string response = requestBus.Send<TestRequest, string>(testRequest);
 
         Assert.True(testUseCase.WasExecuted);
         Assert.Null(response);
@@ -98,7 +98,7 @@ public class UseCaseWithoutResponseTests
     public void CallUseCaseAsynchronouslyWithoutResponse()
     {
         TestRequest testRequest = new TestRequest();
-        requestBus.ProcessAsync(testRequest).Wait();
+        requestBus.SendAsync(testRequest).Wait();
 
         Assert.True(testUseCase.WasExecuted);
     }
@@ -107,7 +107,7 @@ public class UseCaseWithoutResponseTests
     public void CallUseCaseAsynchronouslyAndGetValueTypeResponse()
     {
         TestRequest testRequest = new TestRequest();
-        int response = requestBus.ProcessAsync<TestRequest, int>(testRequest).Result;
+        int response = requestBus.SendAsync<TestRequest, int>(testRequest).Result;
 
         Assert.True(testUseCase.WasExecuted);
         Assert.Equal(0, response);
@@ -117,7 +117,7 @@ public class UseCaseWithoutResponseTests
     public void CallUseCaseAsynchronouslyAndGetReferenceTypeResponse()
     {
         TestRequest testRequest = new TestRequest();
-        string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
+        string response = requestBus.SendAsync<TestRequest, string>(testRequest).Result;
 
         Assert.True(testUseCase.WasExecuted);
         Assert.Null(response);

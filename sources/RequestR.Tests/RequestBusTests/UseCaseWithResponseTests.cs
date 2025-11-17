@@ -71,7 +71,7 @@ public class UseCaseWithResponseTests
     public void CallUseCaseSynchronouslyWithoutResponse()
     {
         TestRequest testRequest = new TestRequest();
-        requestBus.Process(testRequest);
+        requestBus.Send(testRequest);
 
         Assert.True(testUseCase.WasExecuted);
     }
@@ -83,7 +83,7 @@ public class UseCaseWithResponseTests
 
         Assert.Throws<ResponseCastException>(() =>
         {
-            requestBus.Process<TestRequest, int>(testRequest);
+            requestBus.Send<TestRequest, int>(testRequest);
         });
     }
 
@@ -91,7 +91,7 @@ public class UseCaseWithResponseTests
     public void CallUseCaseSynchronouslyAndGetCorrectTypeResponse()
     {
         TestRequest testRequest = new TestRequest();
-        string response = requestBus.Process<TestRequest, string>(testRequest);
+        string response = requestBus.Send<TestRequest, string>(testRequest);
 
         Assert.True(testUseCase.WasExecuted);
         Assert.Equal("response", response);
@@ -101,7 +101,7 @@ public class UseCaseWithResponseTests
     public void CallUseCaseAsynchronouslyWithoutResponse()
     {
         TestRequest testRequest = new TestRequest();
-        requestBus.ProcessAsync(testRequest).Wait();
+        requestBus.SendAsync(testRequest).Wait();
 
         Assert.True(testUseCase.WasExecuted);
     }
@@ -113,7 +113,7 @@ public class UseCaseWithResponseTests
 
         Assert.ThrowsAsync<ResponseCastException>(async () =>
         {
-            await requestBus.ProcessAsync<TestRequest, int>(testRequest);
+            await requestBus.SendAsync<TestRequest, int>(testRequest);
         });
     }
 
@@ -121,7 +121,7 @@ public class UseCaseWithResponseTests
     public void CallUseCaseAsynchronouslyAndGetCorrectTypeResponse()
     {
         TestRequest testRequest = new TestRequest();
-        string response = requestBus.ProcessAsync<TestRequest, string>(testRequest).Result;
+        string response = requestBus.SendAsync<TestRequest, string>(testRequest).Result;
 
         Assert.True(testUseCase.WasExecuted);
         Assert.Equal("response", response);
